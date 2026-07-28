@@ -6,9 +6,12 @@
 // Sets default values
 AWeapon::AWeapon()
 {
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RootComponent = MeshComponent;
+
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned

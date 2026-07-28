@@ -4,37 +4,33 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Weapon.generated.h"
-
-class AProjectile;
+#include "Enemy.generated.h"
 
 UCLASS()
-class VANGUARD_API AWeapon : public AActor
+class VANGUARD_API AEnemy : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AWeapon();
+	AEnemy();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void Fire();
+
+	UPROPERTY(EditAnywhere)
+	float Health = 100.0f;
+
+	UPROPERTY(EditAnywhere)
+	float Speed = 300.0f;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AProjectile> ProjectileToSpawn;
-
-	float FireTimer = 0.0f;
-
-	UPROPERTY(EditAnywhere)
-	float FireInterval = 0.2f;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void TakeDamageAmount(float DamageAmount);
 };

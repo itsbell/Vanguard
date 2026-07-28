@@ -2,6 +2,7 @@
 
 
 #include "Projectile.h"
+#include "Enemy.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -25,10 +26,10 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 {
 	if (OtherActor == GetOwner()) return;
 
-	/*AEnemy* Enemy = Cast<AEnemy>(OtherActor);
+	AEnemy* Enemy = Cast<AEnemy>(OtherActor);
 	if (Enemy)
-		Enemy->TakeDamageAmount(Damage);*/
-	UE_LOG(LogTemp, Warning, TEXT("Projectile overlapped: %s"), *GetNameSafe(OtherActor));
+		Enemy->TakeDamageAmount(Damage);
+
 	Destroy();
 }
 
