@@ -1,0 +1,27 @@
+# ── Unreal Engine ──────────────────────────────
+# 빌드하면 자동 생성되는 것들 (수 GB). 저장소에 올릴 이유 없음
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# 플러그인 안의 것들도 동일
+Plugins/**/Binaries/
+Plugins/**/Intermediate/
+
+# ── Visual Studio ──────────────────────────────
+# .sln도 .uproject 우클릭으로 재생성 가능
+.vs/
+*.sln
+*.slnx
+*.suo
+*.VC.db
+*.VC.opendb
+*.opensdf
+*.opendb
+*.sdf
+
+# ── OS ─────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
