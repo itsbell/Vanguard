@@ -26,5 +26,5 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	float SpawnRange = 400.0f;
+	float SpawnRange = 800.0f;
 };

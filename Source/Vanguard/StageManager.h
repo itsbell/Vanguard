@@ -8,6 +8,7 @@
 
 class AEnemy;
 class AEnemySpawner;
+class AVanguardCharacter;
 
 USTRUCT(BlueprintType)
 struct FSpawnEntry
@@ -78,8 +79,14 @@ private:
 	UPROPERTY(EditInstanceOnly)
 	AEnemySpawner* Spawner;
 
+	UPROPERTY()
+	AVanguardCharacter* Character;
+
 	void StartWave();
 
 	UFUNCTION()
 	void HandleEnemyDied(AEnemy* DeadEnemy);
+	
+	UFUNCTION()
+	void HandleCharacterDied(AVanguardCharacter* DeadCharacter);
 };

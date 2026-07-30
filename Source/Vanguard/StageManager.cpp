@@ -4,6 +4,8 @@
 #include "StageManager.h"
 #include "EnemySpawner.h"
 #include "Enemy.h"
+#include "VanguardCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AStageManager::AStageManager()
@@ -17,9 +19,25 @@ AStageManager::AStageManager()
 void AStageManager::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (!PlayerPawn)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayerPawn is nullptr."));
+		return;
+	}
+
+	Character = Cast<AVanguardCharacter>(PlayerPawn);
+	if (!Character)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character is nullptr."));
+		return;
+	}
+	Character->OnCharacterDied.AddDynamic(this, &AStageManager::HandleCharacterDied);
+
 	if (!Spawner)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Spawner is not set in StageManager class."));
+		UE_LOG(LogTemp, Warning, TEXT("Spawner is not set"));
 		return;
 	}
 
@@ -92,5 +110,10 @@ void AStageManager::StartWave()
 void AStageManager::HandleEnemyDied(AEnemy* DeadEnemy)
 {
 	AliveEnemyCount--;
+}
+
+void AStageManager::HandleCharacterDied(AVanguardCharacter* DeadCharacter)
+{
+
 }
 

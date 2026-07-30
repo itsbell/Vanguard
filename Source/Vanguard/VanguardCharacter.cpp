@@ -51,6 +51,17 @@ AVanguardCharacter::AVanguardCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AVanguardCharacter::TakeDamageAmount(float Damage)
+{
+	Health -= Damage;
+	if (!bIsDead && Health <= 0.0f)
+	{
+		Health = 0.0f;
+		bIsDead = true;
+		OnCharacterDied.Broadcast(this);
+	}
+}
+
 void AVanguardCharacter::BeginPlay()
 {
 	Super::BeginPlay();

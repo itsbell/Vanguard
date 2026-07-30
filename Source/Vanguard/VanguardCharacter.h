@@ -13,8 +13,10 @@ class UInputAction;
 struct FInputActionValue;
 
 class AWeapon;
+class AVanguardCharacter;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVanguardCharacterDied, AVanguardCharacter*, DeadCharacter);
 
 /**
  *  A simple player-controllable third person character
@@ -52,12 +54,23 @@ protected:
 	UPROPERTY()
 	AWeapon* CurrentWeapon;
 
+	UPROPERTY(EditAnywhere)
+	float Health = 100.0f;
+
+	bool bIsDead = false;
+
 public:
 
 	/** Constructor */
 	AVanguardCharacter();	
 
 	void SetWeapon(AWeapon* Weapon) { CurrentWeapon = Weapon; }
+	void TakeDamageAmount(float Damage);
+
+
+	UPROPERTY(BlueprintAssignable)
+	FOnVanguardCharacterDied OnCharacterDied;
+
 protected:
 	virtual void BeginPlay() override;
 
