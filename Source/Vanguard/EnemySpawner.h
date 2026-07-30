@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "EnemySpawner.generated.h"
 
+class AEnemy;
+
 UCLASS()
 class VANGUARD_API AEnemySpawner : public AActor
 {
@@ -20,7 +22,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	AEnemy* SpawnEnemy(TSubclassOf<AEnemy> EnemyClass);
 
+private:
+	UPROPERTY(EditAnywhere)
+	float SpawnRange = 400.0f;
 };

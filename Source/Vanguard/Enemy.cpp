@@ -17,14 +17,16 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AEnemy::TakeDamageAmount(float DamageAmount)
 {
 	Health -= DamageAmount;
 	if (Health <= 0.0f)
+	{
+		OnEnemyDied.Broadcast(this);
 		Destroy();
+	}
 }
 
 // Called every frame

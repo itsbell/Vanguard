@@ -2,6 +2,8 @@
 
 
 #include "StageManager.h"
+#include "EnemySpawner.h"
+#include "Enemy.h"
 
 // Sets default values
 AStageManager::AStageManager()
@@ -29,6 +31,52 @@ void AStageManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (StageIndex >= Stages.Num()) return;
+	FStage& Stage = Stages[StageIndex];
+
+	if (WaveIndex < Stage.Waves.Num())
+	{
+		FWave& Wave = Stage.Waves[WaveIndex];
+
+		bool bWaveEnd = true;
+		for (int32 i = 0; i < Wave.SpawnEntries.Num(); i++)
+		{
+			FSpawnEntry& SpawnEntry = Wave.SpawnEntries[i];
+			FSpawnEntryStatus& SpawnEntryStatus = SpawnEntryStatuses[i];
+
+			if (SpawnEntryStatus.Count < SpawnEntry.Count)
+			{
+				SpawnEntryStatus.Timer += DeltaTime;
+				if (SpawnEntryStatus.Timer >= SpawnEntry.Interval)
+				{
+					AEnemy* SpawnedEnemy = Spawner->SpawnEnemy(SpawnEntry.EnemyClass);
+					if (SpawnedEnemy)
+					{
+						SpawnedEnemy->OnEnemyDied.AddDynamic(this, &AStageManager::HandleEnemyDied);
+						AliveEnemyCount++;
+					}
+					SpawnEntryStatus.Timer -= SpawnEntry.Interval;
+					SpawnEntryStatus.Count++;
+				}
+				bWaveEnd = false;
+			}
+		}
+
+		if (bWaveEnd)
+		{
+			WaveIndex++;
+			StartWave();
+		}
+	}
+	else
+	{
+		if (AliveEnemyCount == 0) // Stage Clear
+		{
+			StageIndex++;
+			WaveIndex = 0;
+			StartWave();
+		}
+	}
 }
 
 void AStageManager::StartWave()
@@ -39,5 +87,10 @@ void AStageManager::StartWave()
 	FStage& Stage = Stages[StageIndex];
 	FWave& Wave = Stage.Waves[WaveIndex];
 	SpawnEntryStatuses.Init(FSpawnEntryStatus(), Wave.SpawnEntries.Num());
+}
+
+void AStageManager::HandleEnemyDied(AEnemy* DeadEnemy)
+{
+	AliveEnemyCount--;
 }
 

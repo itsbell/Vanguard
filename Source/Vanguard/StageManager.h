@@ -79,4 +79,7 @@ private:
 	AEnemySpawner* Spawner;
 
 	void StartWave();
+
+	UFUNCTION()
+	void HandleEnemyDied(AEnemy* DeadEnemy);
 };

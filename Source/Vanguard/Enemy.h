@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Enemy.generated.h"
 
+class AEnemy;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVanguardEnemyDied, AEnemy*, DeadEnemy);
+
 UCLASS()
 class VANGUARD_API AEnemy : public AActor
 {
@@ -33,4 +36,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void TakeDamageAmount(float DamageAmount);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnVanguardEnemyDied OnEnemyDied;
+
 };

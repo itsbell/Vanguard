@@ -2,12 +2,13 @@
 
 
 #include "EnemySpawner.h"
+#include "Enemy.h"
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -18,10 +19,15 @@ void AEnemySpawner::BeginPlay()
 	
 }
 
-// Called every frame
-void AEnemySpawner::Tick(float DeltaTime)
+AEnemy* AEnemySpawner::SpawnEnemy(TSubclassOf<AEnemy> EnemyClass)
 {
-	Super::Tick(DeltaTime);
+	if (!EnemyClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyClass is not set in AEnemySpawner class."));
+		return nullptr;
+	}
 
+	FVector SpawnLocation = GetActorLocation() + GetActorRightVector() * FMath::RandRange(-SpawnRange, SpawnRange);
+
+	return GetWorld()->SpawnActor<AEnemy>(EnemyClass, SpawnLocation, GetActorRotation());
 }
-
