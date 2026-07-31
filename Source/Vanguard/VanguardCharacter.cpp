@@ -53,7 +53,10 @@ AVanguardCharacter::AVanguardCharacter()
 
 void AVanguardCharacter::TakeDamageAmount(float Damage)
 {
+	if (bIsDead) return;
+
 	Health -= Damage;
+	UE_LOG(LogTemp, Warning, TEXT("Character health: %f"), Health);
 	if (!bIsDead && Health <= 0.0f)
 	{
 		Health = 0.0f;
