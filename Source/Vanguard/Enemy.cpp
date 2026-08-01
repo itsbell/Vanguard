@@ -4,6 +4,8 @@
 #include "Enemy.h"
 #include "VanguardCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/WidgetComponent.h"
+#include "HealthBarWidget.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -13,6 +15,17 @@ AEnemy::AEnemy()
 
     MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyMesh"));
 	RootComponent = MeshComponent;
+
+	HealthBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidget"));
+	HealthBarWidgetComponent->SetupAttachment(RootComponent);
+	HealthBarWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HealthBarWidgetComponent->SetGenerateOverlapEvents(false);
+	HealthBarWidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, 120.f));
+	HealthBarWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+	HealthBarWidgetComponent->SetTwoSided(true);
+	HealthBarWidgetComponent->SetDrawSize(FVector2D(200.f, 30.f));
+	HealthBarWidgetComponent->SetRelativeScale3D(FVector(0.3f));
+	HealthBarWidgetComponent->SetPivot(FVector2D(0.5f, 0.5f));
 }
 
 // Called when the game starts or when spawned
@@ -20,6 +33,21 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Health = MaxHealth;
+	if (HealthBarWidgetComponent)
+	{
+		HealthBarWidgetComponent->InitWidget();
+		HealthBarWidget = Cast<UHealthBarWidget>(HealthBarWidgetComponent->GetUserWidgetObject());
+		if (HealthBarWidget)
+		{
+			HealthBarWidget->SetHealthPercent(1.f);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HealthBarWidget cast failed."));
+		}
+	}
+
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (!PlayerPawn)
 	{
@@ -38,6 +66,12 @@ void AEnemy::BeginPlay()
 void AEnemy::TakeDamageAmount(float DamageAmount)
 {
 	Health -= DamageAmount;
+
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetHealthPercent(Health / MaxHealth);
+	}
+
 	if (Health <= 0.0f)
 	{
 		OnEnemyDied.Broadcast(this);
@@ -51,15 +85,12 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (!Character)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Character is nullptr."));
 		return;
-	}
+
 	AttackTimer += DeltaTime;
 
 	FVector ActorLocation = GetActorLocation();
 	FVector ActorForward = GetActorForwardVector();
-	FVector ActorRightForward = GetActorRightVector();
 	FVector CharacterLocation = Character->GetTargetLocation();
 	FVector MoveVector = CharacterLocation - ActorLocation;
 	MoveVector.Z = 0;

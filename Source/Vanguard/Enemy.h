@@ -8,6 +8,7 @@
 
 class AEnemy;
 class AVanguardCharacter;
+class UWidgetComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVanguardEnemyDied, AEnemy*, DeadEnemy);
 
@@ -26,6 +27,12 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float Health = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float MaxHealth = 100.0f;
+
+	UPROPERTY()
+	TObjectPtr<class UHealthBarWidget> HealthBarWidget;
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 300.0f;
@@ -52,6 +59,8 @@ protected:
 
 	AVanguardCharacter* Character;
 
+	UPROPERTY(VisibleAnywhere)
+	UWidgetComponent* HealthBarWidgetComponent;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
