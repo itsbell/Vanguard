@@ -49,13 +49,15 @@ protected:
 	UInputAction* MouseLookAction;
 
 	UPROPERTY(EditAnywhere, Category="Weapon")
-	TSubclassOf<AWeapon> StartWeapon;
+	TSubclassOf<AWeapon> WeaponClass;
 
 	UPROPERTY()
-	AWeapon* CurrentWeapon;
+	AWeapon* CurrentWeapon = nullptr;
 
 	UPROPERTY(EditAnywhere)
 	float Health = 100.0f;
+
+	const float BaseWalkSpeed = 500.f;
 
 	bool bIsDead = false;
 
@@ -64,7 +66,7 @@ public:
 	/** Constructor */
 	AVanguardCharacter();	
 
-	void SetWeapon(AWeapon* Weapon) { CurrentWeapon = Weapon; }
+	void SetWeapon(AWeapon* Weapon);
 	void TakeDamageAmount(float Damage);
 
 

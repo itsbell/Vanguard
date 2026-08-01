@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "VanguardCharacter.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
@@ -31,7 +29,7 @@ AVanguardCharacter::AVanguardCharacter()
 	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 500.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
@@ -49,6 +47,19 @@ AVanguardCharacter::AVanguardCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+void AVanguardCharacter::SetWeapon(AWeapon* Weapon)
+{
+	CurrentWeapon = Weapon;
+	if (CurrentWeapon)
+	{
+		if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+		{
+			const float WeaponWeight = CurrentWeapon ? CurrentWeapon->Weight * 5 : 0.0f;
+			MoveComp->MaxWalkSpeed = FMath::Clamp(BaseWalkSpeed - WeaponWeight, 100.f, BaseWalkSpeed);
+		}
+	}
 }
 
 void AVanguardCharacter::TakeDamageAmount(float Damage)
@@ -69,16 +80,16 @@ void AVanguardCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StartWeapon)
+	if (!WeaponClass)
 	{
-		UE_LOG(LogVanguard, Error, TEXT("'%s' StartWeapon is not set! Please set a StartWeapon in the Blueprint or C++ class."), *GetNameSafe(this));
+		UE_LOG(LogVanguard, Error, TEXT("'%s' WeaponClass is not set! Please set a WeaponClass in the Blueprint or C++ class."), *GetNameSafe(this));
 		return;
     }
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 
-	AWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(StartWeapon, SpawnParams);
+	AWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, SpawnParams);
 	if (SpawnedWeapon)
 	{
 		SetWeapon(SpawnedWeapon);
