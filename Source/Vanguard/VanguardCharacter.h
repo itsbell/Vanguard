@@ -5,15 +5,15 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
-#include "VanguardCharacter.generated.h"
-
-class USpringArmComponent;
-class UCameraComponent;
-class UInputAction;
-struct FInputActionValue;
+#include "VanguardCharacter.generated.h" // VanguardCharacter.generated.h" must be the last include in the header!!!
 
 class AWeapon;
+class UInputAction;
+class UHealthBarWidget;
+class UCameraComponent;
 class AVanguardCharacter;
+class USpringArmComponent;
+struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVanguardCharacterDied, AVanguardCharacter*, DeadCharacter);
@@ -54,12 +54,21 @@ protected:
 	UPROPERTY()
 	AWeapon* CurrentWeapon = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	float Health = 100.0f;
 
 	const float BaseWalkSpeed = 500.f;
 
 	bool bIsDead = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Status")
+	float MaxHealth = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UHealthBarWidget> HealthBarWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UHealthBarWidget> HealthBarWidget;
 
 public:
 
