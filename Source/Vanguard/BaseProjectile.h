@@ -2,15 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Projectile.generated.h"
+#include "BaseProjectile.generated.h"
 
 UCLASS()
-class VANGUARD_API AProjectile : public AActor
+class VANGUARD_API ABaseProjectile : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	AProjectile();
+	ABaseProjectile();
 
 protected:
 	virtual void BeginPlay() override;

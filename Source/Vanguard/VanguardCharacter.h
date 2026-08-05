@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +5,7 @@
 #include "Logging/LogMacros.h"
 #include "VanguardCharacter.generated.h" // VanguardCharacter.generated.h" must be the last include in the header!!!
 
-class AWeapon;
+class ABaseWeapon;
 class UInputAction;
 class UHealthBarWidget;
 class UCameraComponent;
@@ -49,10 +47,10 @@ protected:
 	UInputAction* MouseLookAction;
 
 	UPROPERTY(EditAnywhere, Category="Weapon")
-	TSubclassOf<AWeapon> WeaponClass;
+	TSubclassOf<ABaseWeapon> WeaponClass;
 
 	UPROPERTY()
-	AWeapon* CurrentWeapon = nullptr;
+	ABaseWeapon* CurrentWeapon = nullptr;
 
 	UPROPERTY()
 	float Health = 100.0f;
@@ -75,7 +73,7 @@ public:
 	/** Constructor */
 	AVanguardCharacter();	
 
-	void SetWeapon(AWeapon* Weapon);
+	void SetWeapon(ABaseWeapon* Weapon);
 	void TakeDamageAmount(float Damage);
 
 

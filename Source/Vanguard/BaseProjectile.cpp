@@ -1,6 +1,6 @@
-#include "Projectile.h"
+#include "BaseProjectile.h"
 
-AProjectile::AProjectile()
+ABaseProjectile::ABaseProjectile()
 {
     MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
 	RootComponent = MeshComponent;
@@ -9,14 +9,14 @@ AProjectile::AProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AProjectile::BeginPlay()
+void ABaseProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
+
+	MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ABaseProjectile::OnOverlapBegin);
 }
 
-void AProjectile::Tick(float DeltaTime)
+void ABaseProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -25,4 +25,3 @@ void AProjectile::Tick(float DeltaTime)
 
 	SetActorLocation(ActorLocation + ActorForwardVector * Speed * DeltaTime);
 }
-

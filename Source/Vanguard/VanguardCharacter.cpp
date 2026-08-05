@@ -9,7 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Vanguard.h"
-#include "Weapon.h"
+#include "BaseWeapon.h"
 #include "HealthBarWidget.h"
 
 AVanguardCharacter::AVanguardCharacter()
@@ -74,7 +74,7 @@ void AVanguardCharacter::BeginPlay()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 
-	AWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, SpawnParams);
+	ABaseWeapon* SpawnedWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, SpawnParams);
 	if (SpawnedWeapon)
 	{
 		SetWeapon(SpawnedWeapon);
@@ -82,7 +82,7 @@ void AVanguardCharacter::BeginPlay()
 	}
 }
 
-void AVanguardCharacter::SetWeapon(AWeapon* Weapon)
+void AVanguardCharacter::SetWeapon(ABaseWeapon* Weapon)
 {
 	CurrentWeapon = Weapon;
 	if (CurrentWeapon)
