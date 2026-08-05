@@ -10,6 +10,7 @@
 #include "InputActionValue.h"
 #include "Vanguard.h"
 #include "Weapon.h"
+#include "HealthBarWidget.h"
 
 AVanguardCharacter::AVanguardCharacter()
 {
@@ -49,6 +50,38 @@ AVanguardCharacter::AVanguardCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AVanguardCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Health = MaxHealth;
+	if (HealthBarWidgetClass)
+	{
+		HealthBarWidget = CreateWidget<UHealthBarWidget>(GetWorld(), HealthBarWidgetClass);
+		if (HealthBarWidget)
+		{
+			HealthBarWidget->AddToViewport();
+			HealthBarWidget->SetHealthPercent(1.f);
+		}
+	}
+
+	if (!WeaponClass)
+	{
+		UE_LOG(LogVanguard, Error, TEXT("'%s' WeaponClass is not set! Please set a WeaponClass in the Blueprint or C++ class."), *GetNameSafe(this));
+		return;
+	}
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+
+	AWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, SpawnParams);
+	if (SpawnedWeapon)
+	{
+		SetWeapon(SpawnedWeapon);
+		SpawnedWeapon->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	}
+}
+
 void AVanguardCharacter::SetWeapon(AWeapon* Weapon)
 {
 	CurrentWeapon = Weapon;
@@ -66,35 +99,18 @@ void AVanguardCharacter::TakeDamageAmount(float Damage)
 {
 	if (bIsDead) return;
 
-	Health -= Damage;
-	UE_LOG(LogTemp, Warning, TEXT("Character health: %f"), Health);
-	if (!bIsDead && Health <= 0.0f)
+	Health = FMath::Max(Health - Damage, 0.0f);
+
+	if (HealthBarWidget)
 	{
-		Health = 0.0f;
+		HealthBarWidget->SetHealthPercent(Health / MaxHealth);
+	}
+
+	if (Health <= 0.0f)
+	{
 		bIsDead = true;
 		OnCharacterDied.Broadcast(this);
 	}
-}
-
-void AVanguardCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!WeaponClass)
-	{
-		UE_LOG(LogVanguard, Error, TEXT("'%s' WeaponClass is not set! Please set a WeaponClass in the Blueprint or C++ class."), *GetNameSafe(this));
-		return;
-    }
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-
-	AWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, SpawnParams);
-	if (SpawnedWeapon)
-	{
-		SetWeapon(SpawnedWeapon);
-		SpawnedWeapon->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
-    }
 }
 
 void AVanguardCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

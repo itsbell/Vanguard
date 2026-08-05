@@ -6,8 +6,13 @@
 
 void UHealthBarWidget::SetHealthPercent(float Percent)
 {
-    if (HealthBar)
-    {
-        HealthBar->SetPercent(FMath::Clamp(Percent, 0.f, 1.f));
-    }
+	if (!HealthBar) return;
+
+	const float Clamped = FMath::Clamp(Percent, 0.f, 1.f);
+	HealthBar->SetPercent(Clamped);
+
+	if (bUseLowHealthColor)
+	{
+		HealthBar->SetFillColorAndOpacity(Clamped <= LowHealthThreshold ? LowColor : NormalColor);
+	}
 }
