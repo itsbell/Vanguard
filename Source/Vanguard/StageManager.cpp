@@ -4,6 +4,7 @@
 #include "StageManager.h"
 #include "EnemySpawner.h"
 #include "Enemy.h"
+#include "WeaponBox.h"
 #include "VanguardCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -105,6 +106,9 @@ void AStageManager::StartWave()
 	FStage& Stage = Stages[StageIndex];
 	FWave& Wave = Stage.Waves[WaveIndex];
 	SpawnEntryStatuses.Init(FSpawnEntryStatus(), Wave.SpawnEntries.Num());
+	
+	if (Wave.WeaponBoxClass)
+		Spawner->SpawnWeaponBox(Wave.WeaponBoxClass);
 }
 
 void AStageManager::HandleEnemyDied(AEnemy* DeadEnemy)

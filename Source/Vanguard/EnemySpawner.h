@@ -7,6 +7,7 @@
 #include "EnemySpawner.generated.h"
 
 class AEnemy;
+class AWeaponBox;
 
 UCLASS()
 class VANGUARD_API AEnemySpawner : public AActor
@@ -23,8 +24,12 @@ protected:
 
 public:	
 	AEnemy* SpawnEnemy(TSubclassOf<AEnemy> EnemyClass);
+	AWeaponBox* SpawnWeaponBox(TSubclassOf<AWeaponBox> AWeaponBoxClass);
 
 private:
 	UPROPERTY(EditAnywhere)
 	float SpawnRange = 800.0f;
+
+	UPROPERTY(EditAnywhere)
+	float WeaponBoxOffset = 100.0f;
 };

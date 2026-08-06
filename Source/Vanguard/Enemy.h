@@ -4,16 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Damageable.h"
 #include "Enemy.generated.h"
 
 class AEnemy;
 class AVanguardCharacter;
 class UWidgetComponent;
+class UHealthBarWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVanguardEnemyDied, AEnemy*, DeadEnemy);
 
 UCLASS()
-class VANGUARD_API AEnemy : public AActor
+class VANGUARD_API AEnemy : public AActor, public IDamageable
 {
 	GENERATED_BODY()
 	
@@ -25,14 +27,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere)
 	float Health = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float MaxHealth = 100.0f;
 
 	UPROPERTY()
-	TObjectPtr<class UHealthBarWidget> HealthBarWidget;
+	TObjectPtr<UHealthBarWidget> HealthBarWidget;
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 300.0f;

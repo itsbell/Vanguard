@@ -3,6 +3,7 @@
 
 #include "EnemySpawner.h"
 #include "Enemy.h"
+#include "WeaponBox.h"
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
@@ -30,4 +31,16 @@ AEnemy* AEnemySpawner::SpawnEnemy(TSubclassOf<AEnemy> EnemyClass)
 	FVector SpawnLocation = GetActorLocation() + GetActorRightVector() * FMath::RandRange(-SpawnRange, SpawnRange);
 
 	return GetWorld()->SpawnActor<AEnemy>(EnemyClass, SpawnLocation, GetActorRotation());
+}
+
+AWeaponBox* AEnemySpawner::SpawnWeaponBox(TSubclassOf<AWeaponBox> WeaponBoxClass)
+{
+	if (!WeaponBoxClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SpawnWeaponBox called with null WeaponBoxClass."));
+		return nullptr;
+	}
+	FVector SpawnLocation = GetActorLocation() + GetActorRightVector() * WeaponBoxOffset;
+
+	return GetWorld()->SpawnActor<AWeaponBox>(WeaponBoxClass, SpawnLocation, GetActorRotation());
 }

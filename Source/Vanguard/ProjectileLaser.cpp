@@ -1,5 +1,6 @@
 #include "ProjectileLaser.h"
 #include "Enemy.h"
+#include "Damageable.h"
 
 AProjectileLaser::AProjectileLaser()
 {
@@ -15,12 +16,12 @@ void AProjectileLaser::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 {
     if (!OtherActor || OtherActor == GetOwner()) return;
 
-    AEnemy* Enemy = Cast<AEnemy>(OtherActor);
-    if (Enemy)
+    IDamageable* DamageableActor = Cast<IDamageable>(OtherActor);
+    if (DamageableActor)
     {
         OverlappingTarget = OtherActor;
 
-        Enemy->TakeDamageAmount(Damage);
+        DamageableActor->TakeDamageAmount(Damage);
         GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &AProjectileLaser::TickDamage, DamageInterval, true);
         GetWorldTimerManager().SetTimer(LifetimeTimerHandle, this, &AProjectileLaser::ExpireLaser, Duration, false);
     }

@@ -1,4 +1,5 @@
 #include "BaseProjectile.h"
+#include "Damageable.h"
 
 ABaseProjectile::ABaseProjectile()
 {
@@ -14,6 +15,19 @@ void ABaseProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ABaseProjectile::OnOverlapBegin);
+}
+
+void ABaseProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!OtherActor || OtherActor == this || OtherActor == GetOwner()) return;
+	// Apply damage to the other actor if it implements the IDamageable interface
+	IDamageable* DamageableActor = Cast<IDamageable>(OtherActor);
+	if (DamageableActor)
+	{
+		DamageableActor->TakeDamageAmount(Damage);
+	}
+	// Destroy the projectile after hitting something
+	Destroy();
 }
 
 void ABaseProjectile::Tick(float DeltaTime)

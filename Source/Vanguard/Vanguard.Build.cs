@@ -24,20 +24,7 @@ public class Vanguard : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		PublicIncludePaths.AddRange(new string[] {
-			"Vanguard",
-			"Vanguard/Variant_Platforming",
-			"Vanguard/Variant_Platforming/Animation",
-			"Vanguard/Variant_Combat",
-			"Vanguard/Variant_Combat/AI",
-			"Vanguard/Variant_Combat/Animation",
-			"Vanguard/Variant_Combat/Gameplay",
-			"Vanguard/Variant_Combat/Interfaces",
-			"Vanguard/Variant_Combat/UI",
-			"Vanguard/Variant_SideScrolling",
-			"Vanguard/Variant_SideScrolling/AI",
-			"Vanguard/Variant_SideScrolling/Gameplay",
-			"Vanguard/Variant_SideScrolling/Interfaces",
-			"Vanguard/Variant_SideScrolling/UI"
+			"Vanguard"
 		});
 
 		// Uncomment if you are using Slate UI

@@ -9,6 +9,7 @@
 class AEnemy;
 class AEnemySpawner;
 class AVanguardCharacter;
+class AWeaponBox;
 
 USTRUCT(BlueprintType)
 struct FSpawnEntry
@@ -32,6 +33,9 @@ struct FWave
 
 	UPROPERTY(EditAnywhere)
 	TArray<FSpawnEntry> SpawnEntries;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeaponBox> WeaponBoxClass;
 };
 
 USTRUCT(BlueprintType)
