@@ -14,33 +14,24 @@ public:
 
     virtual void Tick(float DeltaTime) override;
 
-    //UPROPERTY(EditAnywhere, Category = "Laser")
-    //FName MuzzleSocketName = NAME_None;
+    UPROPERTY(EditAnywhere, Category = "Laser")
+    float MaxRange = 3000.0f;
 
     UPROPERTY(EditAnywhere, Category = "Laser")
-    float MuzzleForwardOffset = 100.0f;
+    float BeamThickness = 20.0f;
 
+    void StopLaser();
 
 protected:
-    virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-
-    UFUNCTION()
-    void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
     UPROPERTY(EditDefaultsOnly, Category = "Laser")
     float DamageInterval = 0.5f;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Laser")
-    float Duration = 3.0f;
-
 private:
     FTimerHandle DamageTimerHandle;
-    FTimerHandle LifetimeTimerHandle;
 
     UPROPERTY()
-    AActor* OverlappingTarget = nullptr;
+    AActor* CurrentHitActor = nullptr;
 
+    void UpdateBeam();
     void TickDamage();
-    void ExpireLaser();
-    void FollowOwner();
 };
