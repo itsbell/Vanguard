@@ -4,87 +4,72 @@
 
 AProjectileLaser::AProjectileLaser()
 {
-    MeshComponent->OnComponentEndOverlap.AddDynamic(this, &AProjectileLaser::OnOverlapEnd);
+    // Overlap 이벤트 기반이 아니므로 콜리전은 트레이스만 반응하도록 설정
+    MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AProjectileLaser::Tick(float DeltaTime)
 {
-    FollowOwner();
+    UpdateBeam();
 }
 
-void AProjectileLaser::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AProjectileLaser::UpdateBeam()
 {
-    if (!OtherActor || OtherActor == GetOwner()) return;
+    AActor* OwnerActor = GetOwner();
+    if (!OwnerActor) return;
 
-    IDamageable* DamageableActor = Cast<IDamageable>(OtherActor);
-    if (DamageableActor)
-    {
-        OverlappingTarget = OtherActor;
+    const FVector StartLocation = OwnerActor->GetActorLocation();
+    const FVector ForwardDir = OwnerActor->GetActorForwardVector();
+    const FVector TraceEnd = StartLocation + ForwardDir * MaxRange;
 
-        DamageableActor->TakeDamageAmount(Damage);
-        GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &AProjectileLaser::TickDamage, DamageInterval, true);
-        GetWorldTimerManager().SetTimer(LifetimeTimerHandle, this, &AProjectileLaser::ExpireLaser, Duration, false);
-    }
-}
+    FHitResult HitResult;
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(this);
+    QueryParams.AddIgnoredActor(OwnerActor);
 
-void AProjectileLaser::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-    if (OtherActor == OverlappingTarget)
+    const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, TraceEnd, ECC_Pawn, QueryParams);
+
+    const float BeamLength = bHit ? FVector::Distance(StartLocation, HitResult.ImpactPoint) : MaxRange;
+
+    // 큐브(중심 피벗) 기준 - 시작점에서 절반만큼 앞으로 위치를 밀어줌
+    const FVector CenterLocation = StartLocation + ForwardDir * (BeamLength * 0.5f);
+
+    SetActorLocation(CenterLocation);
+    SetActorRotation(ForwardDir.Rotation());
+
+    // 기본 큐브는 한 변이 100 unit이라고 가정
+    const float BaseCubeLength = 100.0f;
+    MeshComponent->SetRelativeScale3D(FVector(
+        BeamLength / BaseCubeLength,
+        BeamThickness / BaseCubeLength,
+        BeamThickness / BaseCubeLength));
+
+    // 맞은 대상 처리 (대상이 바뀌었을 때만 갱신)
+    AActor* NewHitActor = bHit ? HitResult.GetActor() : nullptr;
+
+    if (NewHitActor != CurrentHitActor)
     {
         GetWorldTimerManager().ClearTimer(DamageTimerHandle);
-        OverlappingTarget = nullptr;
+        CurrentHitActor = NewHitActor;
+
+        IDamageable* DamageableActor = CurrentHitActor ? Cast<IDamageable>(CurrentHitActor) : nullptr;
+        if (DamageableActor)
+        {
+            DamageableActor->TakeDamageAmount(Damage);
+            GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &AProjectileLaser::TickDamage, DamageInterval, true);
+        }
     }
 }
 
 void AProjectileLaser::TickDamage()
 {
-    if (OverlappingTarget)
-    {
-        AEnemy* Enemy = Cast<AEnemy>(OverlappingTarget);
-        if (Enemy)
-        {
-            Enemy->TakeDamageAmount(Damage);
-        }
-    }
+    IDamageable* DamageableActor = CurrentHitActor ? Cast<IDamageable>(CurrentHitActor) : nullptr;
+    if (DamageableActor)
+        DamageableActor->TakeDamageAmount(Damage);
 }
 
-void AProjectileLaser::ExpireLaser()
+void AProjectileLaser::StopLaser()
 {
     GetWorldTimerManager().ClearTimer(DamageTimerHandle);
     Destroy();
-}
-
-void AProjectileLaser::FollowOwner()
-{
-    AActor* OwnerActor = GetOwner();
-    if (!OwnerActor) return;
-
-    FVector NewLocation;
-    FRotator NewRotation = OwnerActor->GetActorRotation();
-
-    // 무기/캐릭터에 소켓이 지정되어 있으면 그 소켓 위치 사용
-    //if (MuzzleSocketName != NAME_None)
-    //{
-    //    if (ACharacter* OwnerCharacter = Cast<ACharacter>(OwnerActor))
-    //    {
-    //        //if (OwnerCharacter->GetMesh()->DoesSocketExist(MuzzleSocketName))
-    //        //{
-    //        //    NewLocation = OwnerCharacter->GetMesh()->GetSocketLocation(MuzzleSocketName);
-    //        //    NewRotation = OwnerCharacter->GetMesh()->GetSocketRotation(MuzzleSocketName);
-    //        //}
-    //        //else
-    //        //{
-    //        //    NewLocation = OwnerActor->GetActorLocation() + OwnerActor->GetActorForwardVector() * MuzzleForwardOffset;
-    //        //}
-    //    }
-    //}
-    //else
-    {
-        // 소켓 없으면 단순히 전방으로 일정 거리 오프셋
-        NewLocation = OwnerActor->GetActorLocation() + OwnerActor->GetActorForwardVector() * MuzzleForwardOffset;
-    }
-
-    SetActorLocation(NewLocation);
-    SetActorRotation(NewRotation);
 }
