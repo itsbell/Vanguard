@@ -1,9 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "EnemySpawner.h"
 #include "Enemy.h"
 #include "WeaponBox.h"
+#include "BaseWeapon.h"
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
@@ -33,7 +34,7 @@ AEnemy* AEnemySpawner::SpawnEnemy(TSubclassOf<AEnemy> EnemyClass)
 	return GetWorld()->SpawnActor<AEnemy>(EnemyClass, SpawnLocation, GetActorRotation());
 }
 
-AWeaponBox* AEnemySpawner::SpawnWeaponBox(TSubclassOf<AWeaponBox> WeaponBoxClass)
+AWeaponBox* AEnemySpawner::SpawnWeaponBox(TSubclassOf<AWeaponBox> WeaponBoxClass, TSubclassOf<ABaseWeapon> WeaponClass)
 {
 	if (!WeaponBoxClass)
 	{
@@ -42,5 +43,9 @@ AWeaponBox* AEnemySpawner::SpawnWeaponBox(TSubclassOf<AWeaponBox> WeaponBoxClass
 	}
 	FVector SpawnLocation = GetActorLocation() + GetActorRightVector() * WeaponBoxOffset;
 
-	return GetWorld()->SpawnActor<AWeaponBox>(WeaponBoxClass, SpawnLocation, GetActorRotation());
+	AWeaponBox* SpawnedBox = GetWorld()->SpawnActor<AWeaponBox>(WeaponBoxClass, SpawnLocation, GetActorRotation());
+	if (SpawnedBox && WeaponClass) // 웨이브에 지정된 게 있으면 박스 BP 기본값을 덮어쓴다
+		SpawnedBox->SetWeaponClass(WeaponClass);
+
+	return SpawnedBox;
 }

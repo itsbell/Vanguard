@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -73,7 +73,8 @@ public:
 	/** Constructor */
 	AVanguardCharacter();	
 
-	void SetWeapon(ABaseWeapon* Weapon);
+	// 기존 무기를 버리고 새로 장착. 무기 변경의 유일한 진입점
+	void EquipWeapon(TSubclassOf<ABaseWeapon> NewWeaponClass);
 	void TakeDamageAmount(float Damage);
 
 
@@ -82,6 +83,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	void UpdateWalkSpeed(); // 현재 무기 Weight로 MaxWalkSpeed 갱신
 
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

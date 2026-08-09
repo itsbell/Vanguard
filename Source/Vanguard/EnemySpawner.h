@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,6 +8,7 @@
 
 class AEnemy;
 class AWeaponBox;
+class ABaseWeapon;
 
 UCLASS()
 class VANGUARD_API AEnemySpawner : public AActor
@@ -24,7 +25,7 @@ protected:
 
 public:	
 	AEnemy* SpawnEnemy(TSubclassOf<AEnemy> EnemyClass);
-	AWeaponBox* SpawnWeaponBox(TSubclassOf<AWeaponBox> AWeaponBoxClass);
+	AWeaponBox* SpawnWeaponBox(TSubclassOf<AWeaponBox> WeaponBoxClass, TSubclassOf<ABaseWeapon> WeaponClass);
 
 private:
 	UPROPERTY(EditAnywhere)

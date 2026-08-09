@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "StageManager.h"
@@ -91,6 +91,7 @@ void AStageManager::Tick(float DeltaTime)
 	{
 		if (AliveEnemyCount == 0) // Stage Clear
 		{
+			AWeaponBox::DestroyAll(GetWorld()); // StartWave가 다음 스테이지 박스를 스폰하기 전에 정리한다
 			StageIndex++;
 			WaveIndex = 0;
 			StartWave();
@@ -108,7 +109,7 @@ void AStageManager::StartWave()
 	SpawnEntryStatuses.Init(FSpawnEntryStatus(), Wave.SpawnEntries.Num());
 	
 	if (Wave.WeaponBoxClass)
-		Spawner->SpawnWeaponBox(Wave.WeaponBoxClass);
+		Spawner->SpawnWeaponBox(Wave.WeaponBoxClass, Wave.WeaponClass);
 }
 
 void AStageManager::HandleEnemyDied(AEnemy* DeadEnemy)

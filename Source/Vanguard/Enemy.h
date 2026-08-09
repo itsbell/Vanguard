@@ -66,7 +66,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void TakeDamageAmount(float DamageAmount);
+	virtual void TakeDamageAmount(float DamageAmount) override;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnVanguardEnemyDied OnEnemyDied;

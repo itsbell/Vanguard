@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,6 +9,7 @@
 class AEnemy;
 class AEnemySpawner;
 class AVanguardCharacter;
+class ABaseWeapon;
 class AWeaponBox;
 
 USTRUCT(BlueprintType)
@@ -36,6 +37,9 @@ struct FWave
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AWeaponBox> WeaponBoxClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABaseWeapon> WeaponClass;
 };
 
 USTRUCT(BlueprintType)

@@ -1,4 +1,4 @@
-#include "VanguardCharacter.h"
+﻿#include "VanguardCharacter.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -71,27 +71,38 @@ void AVanguardCharacter::BeginPlay()
 		return;
 	}
 
+	EquipWeapon(WeaponClass);
+}
+
+void AVanguardCharacter::EquipWeapon(TSubclassOf<ABaseWeapon> NewWeaponClass)
+{
+	if (!NewWeaponClass) return;
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 
-	ABaseWeapon* SpawnedWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, SpawnParams);
-	if (SpawnedWeapon)
+	ABaseWeapon* SpawnedWeapon = GetWorld()->SpawnActor<ABaseWeapon>(NewWeaponClass, SpawnParams);
+	if (!SpawnedWeapon)
 	{
-		SetWeapon(SpawnedWeapon);
-		SpawnedWeapon->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+		UE_LOG(LogVanguard, Error, TEXT("Failed to spawn weapon '%s'."), *GetNameSafe(NewWeaponClass));
+		return; // 스폰 실패 시 기존 무기를 그대로 유지한다
 	}
+
+	if (CurrentWeapon)
+		CurrentWeapon->Destroy(); // 낡은 무기 소멸. 안 하면 계속 붙어서 발사된다
+
+	CurrentWeapon = SpawnedWeapon;
+	SpawnedWeapon->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+	UpdateWalkSpeed();
 }
 
-void AVanguardCharacter::SetWeapon(ABaseWeapon* Weapon)
+void AVanguardCharacter::UpdateWalkSpeed()
 {
-	CurrentWeapon = Weapon;
-	if (CurrentWeapon)
+	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
 	{
-		if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
-		{
-			const float WeaponWeight = CurrentWeapon ? CurrentWeapon->Weight * 5 : 0.0f;
-			MoveComp->MaxWalkSpeed = FMath::Clamp(BaseWalkSpeed - WeaponWeight, 100.f, BaseWalkSpeed);
-		}
+		const float WeaponWeight = CurrentWeapon ? CurrentWeapon->Weight * 5 : 0.0f;
+		MoveComp->MaxWalkSpeed = FMath::Clamp(BaseWalkSpeed - WeaponWeight, 100.f, BaseWalkSpeed);
 	}
 }
 

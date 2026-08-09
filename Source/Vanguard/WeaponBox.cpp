@@ -1,9 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "WeaponBox.h"
+#include "Vanguard.h"
+#include "BaseWeapon.h"
+#include "VanguardCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
 #include "HealthBarWidget.h"
+
+TArray<TWeakObjectPtr<AWeaponBox>> AWeaponBox::ActiveBoxes;
 
 // Sets default values
 AWeaponBox::AWeaponBox()
@@ -31,7 +37,9 @@ AWeaponBox::AWeaponBox()
 void AWeaponBox::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	ActiveBoxes.Add(this);
+
 	Health = MaxHealth;
 
 	if (HealthBarWidgetComponent)
@@ -42,6 +50,44 @@ void AWeaponBox::BeginPlay()
 		{
 			HealthBarWidget->SetHealthPercent(1.f);
 		}
+	}
+
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (!PlayerPawn)
+	{
+		UE_LOG(LogVanguard, Warning, TEXT("PlayerPawn is nullptr."));
+		return;
+	}
+
+	Character = Cast<AVanguardCharacter>(PlayerPawn);
+	if (!Character)
+	{
+		UE_LOG(LogVanguard, Warning, TEXT("Character is nullptr."));
+		return;
+	}
+}
+
+void AWeaponBox::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	// static이라 PIE 세션이 끝나도 배열이 남는다. 자기 자신과 무효해진 항목을 같이 정리한다.
+	ActiveBoxes.RemoveAllSwap([this](const TWeakObjectPtr<AWeaponBox>& Box)
+		{
+			return !Box.IsValid() || Box.Get() == this;
+		});
+
+	Super::EndPlay(EndPlayReason);
+}
+
+void AWeaponBox::DestroyAll(const UWorld* World)
+{
+	// Destroy()가 EndPlay를 거쳐 ActiveBoxes를 수정하므로, 복사본을 순회한다
+	TArray<TWeakObjectPtr<AWeaponBox>> BoxesToDestroy = ActiveBoxes;
+
+	for (const TWeakObjectPtr<AWeaponBox>& BoxPtr : BoxesToDestroy)
+	{
+		AWeaponBox* Box = BoxPtr.Get();
+		if (Box && Box->GetWorld() == World)
+			Box->Destroy();
 	}
 }
 
@@ -56,7 +102,10 @@ void AWeaponBox::TakeDamageAmount(float DamageAmount)
 
 	if (Health <= 0.0f)
 	{
-		// ���� ȹ��
+		// 무기 획득. 스테이지 클리어의 DestroyAll과 구분되는 유일한 지점이라 여기서 지급한다
+		if (Character && WeaponClass)
+			Character->EquipWeapon(WeaponClass);
+
 		Destroy();
 	}
 }
@@ -66,9 +115,32 @@ void AWeaponBox::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!Character)
+		return;
+
 	FVector ActorLocation = GetActorLocation();
-	FVector ActorForward = GetActorForwardVector();
+	float CharacterY = Character->GetTargetLocation().Y;
+	float DistanceY = FMath::Abs(ActorLocation.Y - CharacterY);
 
-	SetActorLocation(ActorLocation + ActorForward * Speed * DeltaTime);
+	float StopDistanceY = DistanceLimit; // 기본 정지선
+
+	// 나보다 캐릭터에 가까운 박스가 있으면 그 뒤에 줄을 선다
+	for (const TWeakObjectPtr<AWeaponBox>& BoxPtr : ActiveBoxes)
+	{
+		AWeaponBox* Other = BoxPtr.Get();
+		if (!Other || Other == this)
+			continue;
+
+		if (Other->GetWorld() != GetWorld()) // static이라 PIE의 다른 월드 박스가 섞일 수 있다
+			continue;
+
+		float OtherDistanceY = FMath::Abs(Other->GetActorLocation().Y - CharacterY);
+		if (OtherDistanceY < DistanceY)
+			StopDistanceY = FMath::Max(StopDistanceY, OtherDistanceY + BoxSpacing);
+	}
+
+	if (DistanceY > StopDistanceY)
+	{
+		SetActorLocation(ActorLocation + GetActorForwardVector() * Speed * DeltaTime); // 직진
+	}
 }
-
