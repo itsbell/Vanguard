@@ -1,9 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "Damageable.h"
 #include "Enemy.generated.h"
 
@@ -15,11 +15,11 @@ class UHealthBarWidget;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVanguardEnemyDied, AEnemy*, DeadEnemy);
 
 UCLASS()
-class VANGUARD_API AEnemy : public AActor, public IDamageable
+class VANGUARD_API AEnemy : public ACharacter, public IDamageable
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AEnemy();
 
@@ -39,30 +39,30 @@ protected:
 	float Speed = 300.0f;
 
 	UPROPERTY(EditAnywhere)
-	float DistanceStraight = 800.0f; // Ä³¸¯ÅÍ¿ÍÀÇ YÃà °Å¸®°¡ ÀÌ °ª ¹Ì¸¸ÀÌ¸é Ä³¸¯ÅÍ ¹æÇâÀ¸·Î Ãß°İ ½ÃÀÛ
+	float DistanceStraight = 800.0f; // ìºë¦­í„°ì™€ì˜ Yì¶• ê±°ë¦¬ê°€ ì´ ê°’ ë¯¸ë§Œì´ë©´ ìºë¦­í„° ë°©í–¥ìœ¼ë¡œ ì¶”ê²© ì‹œì‘
 
 	UPROPERTY(EditAnywhere)
-	float DistanceLimit = 200.0f; // Ä³¸¯ÅÍ¿ÍÀÇ YÃà ÃÖ¼Ò À¯Áö °Å¸® (ÀÌ °Å¸®º¸´Ù ´õ °¡±îÀÌ Á¢±ÙÇÏÁö ¾ÊÀ½)
+	float DistanceLimit = 200.0f; // ìºë¦­í„°ì™€ì˜ Yì¶• ìµœì†Œ ìœ ì§€ ê±°ë¦¬ (ì´ ê±°ë¦¬ë³´ë‹¤ ë” ê°€ê¹Œì´ ì ‘ê·¼í•˜ì§€ ì•ŠìŒ)
 
 	UPROPERTY(EditAnywhere)
-	float AttackRange = 250.0f; // °ø°İ »ç°Å¸® (DistanceLimit <= AttackRange ÀÌ¾î¾ß ÇÔ)
+	float AttackRange = 250.0f; // ê³µê²© ì‚¬ê±°ë¦¬ (DistanceLimit <= AttackRange ì´ì–´ì•¼ í•¨)
 
 	UPROPERTY(EditAnywhere)
 	float Damage = 10.0f;
 
 	UPROPERTY(EditAnywhere)
 	float AttackSpeed = 1.0f;
-	
-	float AttackTimer = 0.0f;
 
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* MeshComponent;
+	float AttackTimer = 0.0f;
 
 	AVanguardCharacter* Character;
 
+	// ìŠ¤í° ì‹œ ì „ì§„ ë°©í–¥. íšŒì „ì„ ì¼œë„ ì§ì§„ ì¶•ì´ í‹€ì–´ì§€ì§€ ì•Šê²Œ ê³ ì •í•´ë‘”ë‹¤
+	FVector LaneForward = FVector::ZeroVector;
+
 	UPROPERTY(VisibleAnywhere)
 	UWidgetComponent* HealthBarWidgetComponent;
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

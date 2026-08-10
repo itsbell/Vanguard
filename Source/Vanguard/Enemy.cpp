@@ -1,8 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Enemy.h"
 #include "VanguardCharacter.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
 #include "HealthBarWidget.h"
@@ -13,8 +16,20 @@ AEnemy::AEnemy()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-    MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyMesh"));
-	RootComponent = MeshComponent;
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+
+	// 적끼리, 플레이어와 서로 밀지 않는다. 총알 오버랩은 그대로 유지된다
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+
+	// 마네퀸 계열 메시 기준 정렬. 발을 캡슐 바닥으로 내리고, 메시의 -Y 정면을 캡슐 정면(+X)에 맞춘다
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -89.f), FRotator(0.f, -90.f, 0.f));
+
+	// 이 적은 컨트롤러 없이 Tick에서 스스로 이동 방향을 정한다.
+	// CharacterMovement는 컨트롤러가 없으면 이동/회전 연산을 통째로 건너뛰므로 이 플래그가 필요하다.
+	GetCharacterMovement()->bRunPhysicsWithNoController = true;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f);
+	bUseControllerRotationYaw = false;
 
 	HealthBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidget"));
 	HealthBarWidgetComponent->SetupAttachment(RootComponent);
@@ -32,8 +47,12 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	Health = MaxHealth;
+
+	LaneForward = GetActorForwardVector();
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
+
 	if (HealthBarWidgetComponent)
 	{
 		HealthBarWidgetComponent->InitWidget();
@@ -90,18 +109,17 @@ void AEnemy::Tick(float DeltaTime)
 	AttackTimer += DeltaTime;
 
 	FVector ActorLocation = GetActorLocation();
-	FVector ActorForward = GetActorForwardVector();
 	FVector CharacterLocation = Character->GetTargetLocation();
 	FVector MoveVector = CharacterLocation - ActorLocation;
 	MoveVector.Z = 0;
-	MoveVector.Normalize(); // ���� ����
+	MoveVector.Normalize(); // 단위 벡터
 
 	float Distance = GetDistanceTo(Character);
 	float DistanceY = FMath::Abs(ActorLocation.Y - CharacterLocation.Y);
 
 	if (DistanceY > DistanceStraight)
 	{
-		SetActorLocation(ActorLocation + ActorForward * Speed * DeltaTime); // ����
+		AddMovementInput(LaneForward); // 직진
 	}
 	else if (DistanceY > DistanceLimit)
 	{
@@ -115,10 +133,10 @@ void AEnemy::Tick(float DeltaTime)
 		}
 		else
 		{
-			SetActorLocation(ActorLocation + MoveVector * Speed * DeltaTime); // ĳ���Ͱ� �ִ� ������ �밢�� �������� �߰�
+			AddMovementInput(MoveVector); // 캐릭터가 있는 쪽으로 대각선 방향으로 추격
 		}
 	}
-	else // ���̻� Y�������� �ٰ��� �� ���� ����
+	else // 더이상 Y방향으로 다가갈 수 없는 상태
 	{
 		if (Distance <= AttackRange)
 		{
@@ -130,8 +148,7 @@ void AEnemy::Tick(float DeltaTime)
 		}
 		else
 		{
-			SetActorLocation(ActorLocation + FVector(FMath::Sign(MoveVector.X),0,0) * Speed * DeltaTime); // ĳ���Ͱ� �ִ� ������ X �������� �߰�
+			AddMovementInput(FVector(FMath::Sign(MoveVector.X), 0.f, 0.f)); // 캐릭터가 있는 쪽으로 X 방향으로 추격
 		}
 	}
 }
-
