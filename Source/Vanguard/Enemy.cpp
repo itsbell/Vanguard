@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
 #include "HealthBarWidget.h"
+#include "TimerManager.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -84,7 +85,10 @@ void AEnemy::BeginPlay()
 
 void AEnemy::TakeDamageAmount(float DamageAmount)
 {
-	Health -= DamageAmount;
+	if (bIsDead)
+		return;
+
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
 
 	if (HealthBarWidget)
 	{
@@ -93,9 +97,27 @@ void AEnemy::TakeDamageAmount(float DamageAmount)
 
 	if (Health <= 0.0f)
 	{
+		bIsDead = true;
 		OnEnemyDied.Broadcast(this);
-		Destroy();
+
+		SetActorTickEnabled(false); // 런타임 틱 일시 중지
+		GetCharacterMovement()->StopMovementImmediately();	// 현재: 지금 움직이던 관성을 즉시 제거
+		GetCharacterMovement()->DisableMovement();			// 미래: 이후의 이동 처리를 아예 차단
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (HealthBarWidgetComponent)
+			HealthBarWidgetComponent->SetHiddenInGame(true);
+
+		const float MontageLength = PlayAnimMontage(DeathMontage);
+		if (MontageLength > 0.0f)
+			GetWorldTimerManager().SetTimer(DeathTimerHandle, this, &AEnemy::OnDeathFinished, MontageLength, false);
+		else
+			OnDeathFinished();
 	}
+}
+
+void AEnemy::OnDeathFinished()
+{
+	Destroy();
 }
 
 // Called every frame

@@ -11,6 +11,7 @@ class AEnemy;
 class AVanguardCharacter;
 class UWidgetComponent;
 class UHealthBarWidget;
+class UAnimMontage;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVanguardEnemyDied, AEnemy*, DeadEnemy);
 
@@ -54,6 +55,15 @@ protected:
 	float AttackSpeed = 1.0f;
 
 	float AttackTimer = 0.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	TObjectPtr<UAnimMontage> DeathMontage;
+
+	bool bIsDead = false;
+
+	FTimerHandle DeathTimerHandle;
+
+	void OnDeathFinished();
 
 	AVanguardCharacter* Character;
 
