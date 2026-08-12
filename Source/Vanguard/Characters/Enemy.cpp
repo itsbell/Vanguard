@@ -120,6 +120,25 @@ void AEnemy::OnDeathFinished()
 	Destroy();
 }
 
+void AEnemy::OnAttackFinished()
+{
+	if (bIsDead || !Character)
+		return;
+
+	Character->TakeDamageAmount(Damage);
+}
+
+void AEnemy::Attack()
+{
+	const float MontageLength = PlayAnimMontage(AttackMontage);
+	if (MontageLength > 0.0f)
+		GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemy::OnAttackFinished, MontageLength, false);
+	else
+		Character->TakeDamageAmount(Damage);
+
+	AttackTimer = 0;
+}
+
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
@@ -148,10 +167,7 @@ void AEnemy::Tick(float DeltaTime)
 		if (Distance <= AttackRange)
 		{
 			if (AttackTimer > AttackSpeed)
-			{
-				Character->TakeDamageAmount(Damage);
-				AttackTimer = 0;
-			}
+				Attack();
 		}
 		else
 		{
@@ -163,10 +179,7 @@ void AEnemy::Tick(float DeltaTime)
 		if (Distance <= AttackRange)
 		{
 			if (AttackTimer > AttackSpeed)
-			{
-				Character->TakeDamageAmount(Damage);
-				AttackTimer = 0;
-			}
+				Attack();
 		}
 		else
 		{

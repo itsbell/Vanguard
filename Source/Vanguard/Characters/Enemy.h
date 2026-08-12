@@ -33,45 +33,51 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float MaxHealth = 100.0f;
 
-	UPROPERTY()
-	TObjectPtr<UHealthBarWidget> HealthBarWidget;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Movement")
 	float Speed = 300.0f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Movement")
 	float DistanceStraight = 800.0f; // 캐릭터와의 Y축 거리가 이 값 미만이면 캐릭터 방향으로 추격 시작
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Movement")
 	float DistanceLimit = 200.0f; // 캐릭터와의 Y축 최소 유지 거리 (이 거리보다 더 가까이 접근하지 않음)
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	float AttackRange = 250.0f; // 공격 사거리 (DistanceLimit <= AttackRange 이어야 함)
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	float Damage = 10.0f;
 
-	UPROPERTY(EditAnywhere)
-	float AttackSpeed = 1.0f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AttackSpeed = 2.0f; // 공격 간격(초). AttackMontage 길이보다 길어야 함 (짧으면 이전 공격의 데미지 타이머가 덮어써져 데미지가 증발)
 
 	float AttackTimer = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
-	bool bIsDead = false;
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	TObjectPtr<UAnimMontage> AttackMontage;
 
-	FTimerHandle DeathTimerHandle;
 
-	void OnDeathFinished();
-
-	AVanguardCharacter* Character;
-
-	// 스폰 시 전진 방향. 회전을 켜도 직진 축이 틀어지지 않게 고정해둔다
-	FVector LaneForward = FVector::ZeroVector;
+	UPROPERTY()
+	TObjectPtr<UHealthBarWidget> HealthBarWidget;
 
 	UPROPERTY(VisibleAnywhere)
 	UWidgetComponent* HealthBarWidgetComponent;
+
+	bool bIsDead = false;
+
+	FTimerHandle DeathTimerHandle;
+	FTimerHandle AttackTimerHandle;
+
+	AVanguardCharacter* Character;
+
+	FVector LaneForward = FVector::ZeroVector; // 스폰 시 전진 방향. 회전을 켜도 직진 축이 틀어지지 않게 고정해둔다
+	
+	void OnDeathFinished();
+	void OnAttackFinished();
+	void Attack();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
