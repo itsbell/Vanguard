@@ -1,5 +1,5 @@
 #include "BaseWeapon.h"
-#include "BaseProjectile.h"
+#include "Projectiles/BaseProjectile.h"
 
 ABaseWeapon::ABaseWeapon()
 {

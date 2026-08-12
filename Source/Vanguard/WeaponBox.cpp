@@ -3,8 +3,8 @@
 
 #include "WeaponBox.h"
 #include "Vanguard.h"
-#include "BaseWeapon.h"
-#include "VanguardCharacter.h"
+#include "Weapons/BaseWeapon.h"
+#include "Characters/VanguardCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
 #include "HealthBarWidget.h"

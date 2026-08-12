@@ -9,7 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Vanguard.h"
-#include "BaseWeapon.h"
+#include "Weapons/BaseWeapon.h"
 #include "HealthBarWidget.h"
 
 AVanguardCharacter::AVanguardCharacter()

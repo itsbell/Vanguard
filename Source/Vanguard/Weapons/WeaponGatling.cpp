@@ -1,5 +1,5 @@
 #include "WeaponGatling.h"
-#include "BaseProjectile.h"
+#include "Projectiles/BaseProjectile.h"
 
 AWeaponGatling::AWeaponGatling()
 {

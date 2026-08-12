@@ -2,9 +2,9 @@
 
 
 #include "EnemySpawner.h"
-#include "Enemy.h"
+#include "Characters/Enemy.h"
 #include "WeaponBox.h"
-#include "BaseWeapon.h"
+#include "Weapons/BaseWeapon.h"
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()

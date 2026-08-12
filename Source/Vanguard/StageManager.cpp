@@ -3,9 +3,9 @@
 
 #include "StageManager.h"
 #include "EnemySpawner.h"
-#include "Enemy.h"
+#include "Characters/Enemy.h"
 #include "WeaponBox.h"
-#include "VanguardCharacter.h"
+#include "Characters/VanguardCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values

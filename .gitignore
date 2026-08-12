@@ -25,3 +25,6 @@ Plugins/**/Intermediate/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ── Claude Code ────────────────────────────────
+CLAUDE.md

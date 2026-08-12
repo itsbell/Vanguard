@@ -1,5 +1,5 @@
 #include "ProjectileLaser.h"
-#include "Enemy.h"
+#include "Characters/Enemy.h"
 #include "Damageable.h"
 
 AProjectileLaser::AProjectileLaser()
