@@ -49,7 +49,7 @@ protected:
 	float Damage = 10.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	float AttackSpeed = 2.0f; // 공격 간격(초). AttackMontage 길이보다 길어야 함 (짧으면 이전 공격의 데미지 타이머가 덮어써져 데미지가 증발)
+	float AttackSpeed = 2.0f; // 공격 간격(초). AttackMontage 길이보다 길어야 함 (쿨다운이 몽타주보다 짧으면 휘두르는 도중 Attack()이 또 호출되어 몽타주가 처음부터 재시작)
 
 	float AttackTimer = 0.0f;
 
@@ -69,14 +69,12 @@ protected:
 	bool bIsDead = false;
 
 	FTimerHandle DeathTimerHandle;
-	FTimerHandle AttackTimerHandle;
 
 	AVanguardCharacter* Character;
 
 	FVector LaneForward = FVector::ZeroVector; // 스폰 시 전진 방향. 회전을 켜도 직진 축이 틀어지지 않게 고정해둔다
 	
 	void OnDeathFinished();
-	void OnAttackFinished();
 	void Attack();
 public:
 	// Called every frame
@@ -87,4 +85,5 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnVanguardEnemyDied OnEnemyDied;
 
+	void OnAttackHit();
 };
