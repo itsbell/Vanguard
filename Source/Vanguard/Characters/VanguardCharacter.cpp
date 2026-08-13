@@ -101,7 +101,7 @@ void AVanguardCharacter::UpdateWalkSpeed()
 {
 	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
 	{
-		const float WeaponWeight = CurrentWeapon ? CurrentWeapon->Weight * 5 : 0.0f;
+		const float WeaponWeight = CurrentWeapon ? CurrentWeapon->GetWeight() * 5 : 0.0f;
 		MoveComp->MaxWalkSpeed = FMath::Clamp(BaseWalkSpeed - WeaponWeight, 100.f, BaseWalkSpeed);
 	}
 }

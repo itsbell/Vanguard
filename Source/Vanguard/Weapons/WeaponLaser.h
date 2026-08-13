@@ -4,6 +4,8 @@
 #include "BaseWeapon.h"
 #include "WeaponLaser.generated.h"
 
+class AProjectileLaser;
+
 UCLASS()
 class VANGUARD_API AWeaponLaser : public ABaseWeapon
 {
@@ -15,6 +17,6 @@ protected:
     virtual void BeginPlay() override;
 
     UPROPERTY()
-    class AProjectileLaser* ActiveLaser = nullptr;
+    TObjectPtr<AProjectileLaser> ActiveLaser;
 
 };

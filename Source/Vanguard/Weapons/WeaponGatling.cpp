@@ -3,27 +3,19 @@
 
 AWeaponGatling::AWeaponGatling()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    FireInterval = 0.1f;
 }
 
-void AWeaponGatling::Tick(float DeltaTime)
+void AWeaponGatling::Fire()
 {
-    Super::Tick(DeltaTime);
-
-    FireTimer += DeltaTime;
-    if (FireTimer >= FireInterval)
+    if (BarrelOffsets.Num() > 0)
     {
-        FireTimer -= FireInterval;
-
-        if (BarrelOffsets.Num() > 0)
-        {
-            FireFromBarrel(BarrelOffsets[CurrentBarrelIndex]);
-            CurrentBarrelIndex = (CurrentBarrelIndex + 1) % BarrelOffsets.Num(); // 총열 순서대로 순환
-        }
-        else
-        {
-            FireFromBarrel(FVector::ZeroVector);
-        }
+        FireFromBarrel(BarrelOffsets[CurrentBarrelIndex]);
+        CurrentBarrelIndex = (CurrentBarrelIndex + 1) % BarrelOffsets.Num(); // 총열 순서대로 순환
+    }
+    else
+    {
+        FireFromBarrel(FVector::ZeroVector);
     }
 }
 

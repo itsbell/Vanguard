@@ -3,9 +3,26 @@
 
 ABaseWeapon::ABaseWeapon()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RootComponent = MeshComponent;
+}
+
+void ABaseWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (FireInterval <= 0.0f)
+		return;
+
+	FireTimer += DeltaTime;
+	if (FireTimer >= FireInterval)
+	{
+		Fire();
+		FireTimer -= FireInterval;
+	}
 }
 
 void ABaseWeapon::BeginPlay()

@@ -4,7 +4,7 @@
 #include "BaseProjectile.h"
 #include "ProjectileLaser.generated.h"
 
-UCLASS()
+UCLASS(meta = (PrioritizeCategories = "스탯"))
 class VANGUARD_API AProjectileLaser : public ABaseProjectile
 {
 	GENERATED_BODY()
@@ -12,26 +12,26 @@ class VANGUARD_API AProjectileLaser : public ABaseProjectile
 public:
 	AProjectileLaser();
 
-    virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override;
 
-    UPROPERTY(EditAnywhere, Category = "Laser")
-    float MaxRange = 3000.0f;
-
-    UPROPERTY(EditAnywhere, Category = "Laser")
-    float BeamThickness = 20.0f;
-
-    void StopLaser();
+	void StopLaser();
 
 protected:
-    UPROPERTY(EditDefaultsOnly, Category = "Laser")
-    float DamageInterval = 0.5f;
+	UPROPERTY(EditAnywhere, Category = "스탯")
+	float MaxRange = 3000.0f;
+
+	UPROPERTY(EditAnywhere, Category = "스탯")
+	float BeamThickness = 20.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "스탯")
+	float DamageInterval = 0.5f;
 
 private:
-    FTimerHandle DamageTimerHandle;
+	FTimerHandle DamageTimerHandle;
 
-    UPROPERTY()
-    AActor* CurrentHitActor = nullptr;
+	UPROPERTY()
+	TObjectPtr<AActor> CurrentHitActor;
 
-    void UpdateBeam();
-    void TickDamage();
+	void UpdateBeam();
+	void TickDamage();
 };

@@ -15,7 +15,7 @@ class UAnimMontage;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVanguardEnemyDied, AEnemy*, DeadEnemy);
 
-UCLASS()
+UCLASS(meta = (PrioritizeCategories = "스탯 이동 애니메이션"))
 class VANGUARD_API AEnemy : public ACharacter, public IDamageable
 {
 	GENERATED_BODY()
@@ -30,33 +30,31 @@ protected:
 
 	float Health = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	UPROPERTY(EditDefaultsOnly, Category = "스탯")
 	float MaxHealth = 100.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
+	UPROPERTY(EditAnywhere, Category = "스탯")
 	float Speed = 300.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float DistanceStraight = 800.0f; // 캐릭터와의 Y축 거리가 이 값 미만이면 캐릭터 방향으로 추격 시작
-
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float DistanceLimit = 200.0f; // 캐릭터와의 Y축 최소 유지 거리 (이 거리보다 더 가까이 접근하지 않음)
-
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, Category = "스탯")
 	float AttackRange = 250.0f; // 공격 사거리 (DistanceLimit <= AttackRange 이어야 함)
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, Category = "스탯")
 	float Damage = 10.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, Category = "스탯")
 	float AttackSpeed = 2.0f; // 공격 간격(초). AttackMontage 길이보다 길어야 함 (쿨다운이 몽타주보다 짧으면 휘두르는 도중 Attack()이 또 호출되어 몽타주가 처음부터 재시작)
 
-	float AttackTimer = 0.0f;
+	UPROPERTY(EditAnywhere, Category = "이동")
+	float DistanceStraight = 800.0f; // 캐릭터와의 Y축 거리가 이 값 미만이면 캐릭터 방향으로 추격 시작
 
-	UPROPERTY(EditAnywhere, Category = "Animation")
+	UPROPERTY(EditAnywhere, Category = "이동")
+	float DistanceLimit = 200.0f; // 캐릭터와의 Y축 최소 유지 거리 (이 거리보다 더 가까이 접근하지 않음)
+
+	UPROPERTY(EditAnywhere, Category = "애니메이션")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Animation")
+	UPROPERTY(EditAnywhere, Category = "애니메이션")
 	TObjectPtr<UAnimMontage> AttackMontage;
 
 
@@ -67,6 +65,8 @@ protected:
 	UWidgetComponent* HealthBarWidgetComponent;
 
 	bool bIsDead = false;
+
+	float AttackTimer = 0.0f;
 
 	FTimerHandle DeathTimerHandle;
 

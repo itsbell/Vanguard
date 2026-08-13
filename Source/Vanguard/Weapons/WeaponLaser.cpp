@@ -3,6 +3,7 @@
 
 AWeaponLaser::AWeaponLaser()
 {
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void AWeaponLaser::BeginPlay()
