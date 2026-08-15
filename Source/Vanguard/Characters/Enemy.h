@@ -76,6 +76,7 @@ protected:
 	
 	void OnDeathFinished();
 	void Attack();
+    void FaceCharacter(float DeltaTime);
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

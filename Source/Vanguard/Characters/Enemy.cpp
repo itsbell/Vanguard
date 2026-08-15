@@ -129,6 +129,18 @@ void AEnemy::Attack()
 	AttackTimer = 0;
 }
 
+void AEnemy::FaceCharacter(float DeltaTime)
+{
+	FVector ToCharacter = Character->GetActorLocation() - GetActorLocation();
+    ToCharacter.Z = 0.f; // 수직 회전은 무시
+	if (ToCharacter.IsNearlyZero())
+		return;
+
+    const float TurnSpeed = GetCharacterMovement()->RotationRate.Yaw; // 회전 속도(도/초), 이동 회전과 같은 속도(500)를 재사용
+	const FRotator NewRotation = FMath::RInterpConstantTo(GetActorRotation(), ToCharacter.Rotation(), DeltaTime, TurnSpeed);
+	SetActorRotation(NewRotation);
+}
+
 void AEnemy::OnAttackHit()
 {
 	if (bIsDead || !Character)
@@ -164,6 +176,7 @@ void AEnemy::Tick(float DeltaTime)
 	{
 		if (Distance <= AttackRange)
 		{
+			FaceCharacter(DeltaTime);
 			if (AttackTimer > AttackSpeed)
 				Attack();
 		}
@@ -176,6 +189,7 @@ void AEnemy::Tick(float DeltaTime)
 	{
 		if (Distance <= AttackRange)
 		{
+			FaceCharacter(DeltaTime);
 			if (AttackTimer > AttackSpeed)
 				Attack();
 		}
