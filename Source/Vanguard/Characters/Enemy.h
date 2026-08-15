@@ -15,7 +15,7 @@ class UAnimMontage;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVanguardEnemyDied, AEnemy*, DeadEnemy);
 
-UCLASS(meta = (PrioritizeCategories = "스탯 이동 애니메이션"))
+UCLASS(meta = (PrioritizeCategories = "스탯 이동 몽타주"))
 class VANGUARD_API AEnemy : public ACharacter, public IDamageable
 {
 	GENERATED_BODY()
@@ -51,10 +51,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "이동")
 	float DistanceLimit = 200.0f; // 캐릭터와의 Y축 최소 유지 거리 (이 거리보다 더 가까이 접근하지 않음)
 
-	UPROPERTY(EditAnywhere, Category = "애니메이션")
+	UPROPERTY(EditAnywhere, Category = "몽타주")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
-	UPROPERTY(EditAnywhere, Category = "애니메이션")
+	UPROPERTY(EditAnywhere, Category = "몽타주")
 	TObjectPtr<UAnimMontage> AttackMontage;
 
 
