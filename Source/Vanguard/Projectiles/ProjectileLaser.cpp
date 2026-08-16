@@ -4,7 +4,6 @@
 
 AProjectileLaser::AProjectileLaser()
 {
-    // Overlap 이벤트 기반이 아니므로 콜리전은 트레이스만 반응하도록 설정
     MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -27,7 +26,7 @@ void AProjectileLaser::UpdateBeam()
     QueryParams.AddIgnoredActor(this);
     QueryParams.AddIgnoredActor(OwnerActor);
 
-    const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, TraceEnd, ECC_Pawn, QueryParams);
+    const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, TraceEnd, ECC_Visibility, QueryParams);
 
     const float BeamLength = bHit ? FVector::Distance(StartLocation, HitResult.ImpactPoint) : MaxRange;
 
