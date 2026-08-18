@@ -31,6 +31,9 @@ protected:
 	float FireTimer = 0.0f;
 
 	UPROPERTY(VisibleAnywhere)
+	USceneComponent* WeaponRoot; // 소켓에 정확히 붙는 용도 (빈 컴포넌트, 오프셋 없음)
+
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(EditAnywhere)

@@ -4,7 +4,6 @@
 
 AProjectileLaser::AProjectileLaser()
 {
-    // Overlap 이벤트 기반이 아니므로 콜리전은 트레이스만 반응하도록 설정
     MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -13,13 +12,32 @@ void AProjectileLaser::Tick(float DeltaTime)
     UpdateBeam();
 }
 
+void AProjectileLaser::SetMuzzleTransform(USceneComponent* InAttachComponent, FName InSocketName)
+{
+    MuzzleAttachComponent = InAttachComponent;
+    MuzzleSocketName = InSocketName;
+}
+
 void AProjectileLaser::UpdateBeam()
 {
     AActor* OwnerActor = GetOwner();
     if (!OwnerActor) return;
+    if (!MuzzleAttachComponent) return;
 
-    const FVector StartLocation = OwnerActor->GetActorLocation();
-    const FVector ForwardDir = OwnerActor->GetActorForwardVector();
+    FVector StartLocation;
+    FVector ForwardDir;
+
+    if (MuzzleSocketName != NAME_None && MuzzleAttachComponent->DoesSocketExist(MuzzleSocketName))
+    {
+        StartLocation = MuzzleAttachComponent->GetSocketLocation(MuzzleSocketName);
+        ForwardDir = MuzzleAttachComponent->GetSocketRotation(MuzzleSocketName).Vector();
+    }
+    else
+    {
+        StartLocation = MuzzleAttachComponent->GetComponentLocation();
+        ForwardDir = MuzzleAttachComponent->GetForwardVector();
+    }
+
     const FVector TraceEnd = StartLocation + ForwardDir * MaxRange;
 
     FHitResult HitResult;
@@ -27,7 +45,7 @@ void AProjectileLaser::UpdateBeam()
     QueryParams.AddIgnoredActor(this);
     QueryParams.AddIgnoredActor(OwnerActor);
 
-    const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, TraceEnd, ECC_Pawn, QueryParams);
+    const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, TraceEnd, ECC_Visibility, QueryParams);
 
     const float BeamLength = bHit ? FVector::Distance(StartLocation, HitResult.ImpactPoint) : MaxRange;
 

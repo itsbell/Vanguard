@@ -5,9 +5,12 @@ ABaseWeapon::ABaseWeapon()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	WeaponRoot = CreateDefaultSubobject<USceneComponent>(TEXT("WeaponRoot"));
+	RootComponent = WeaponRoot;
+
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RootComponent = MeshComponent;
+	MeshComponent->SetupAttachment(WeaponRoot); // Root의 자식으로 부착
 }
 
 void ABaseWeapon::Tick(float DeltaTime)
@@ -41,5 +44,14 @@ void ABaseWeapon::Fire()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();
 
-	GetWorld()->SpawnActor<ABaseProjectile>(ProjectileToSpawn, GetActorLocation(), GetActorRotation(), SpawnParams);
+	FVector SpawnLocation = GetActorLocation();
+	FRotator SpawnRotation = GetActorRotation();
+
+	//if (MeshComponent->DoesSocketExist(TEXT("MuzzleSocket")))
+	//{
+	//	SpawnLocation = MeshComponent->GetSocketLocation(TEXT("MuzzleSocket"));
+	//	SpawnRotation = MeshComponent->GetSocketRotation(TEXT("MuzzleSocket"));
+	//}
+
+	GetWorld()->SpawnActor<ABaseProjectile>(ProjectileToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
 }

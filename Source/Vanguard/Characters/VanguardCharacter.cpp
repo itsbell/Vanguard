@@ -92,7 +92,7 @@ void AVanguardCharacter::EquipWeapon(TSubclassOf<ABaseWeapon> NewWeaponClass)
 		CurrentWeapon->Destroy(); // 낡은 무기 소멸. 안 하면 계속 붙어서 발사된다
 
 	CurrentWeapon = SpawnedWeapon;
-	SpawnedWeapon->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	SpawnedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
 
 	UpdateWalkSpeed();
 }

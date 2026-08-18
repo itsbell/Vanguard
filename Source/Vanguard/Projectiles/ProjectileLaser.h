@@ -14,6 +14,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	void SetMuzzleTransform(USceneComponent* InAttachComponent, FName InSocketName);
 	void StopLaser();
 
 protected:
@@ -31,6 +32,11 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AActor> CurrentHitActor;
+
+	UPROPERTY()
+	USceneComponent* MuzzleAttachComponent = nullptr;
+
+	FName MuzzleSocketName = NAME_None;
 
 	void UpdateBeam();
 	void TickDamage();
