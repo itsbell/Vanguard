@@ -12,13 +12,32 @@ void AProjectileLaser::Tick(float DeltaTime)
     UpdateBeam();
 }
 
+void AProjectileLaser::SetMuzzleTransform(USceneComponent* InAttachComponent, FName InSocketName)
+{
+    MuzzleAttachComponent = InAttachComponent;
+    MuzzleSocketName = InSocketName;
+}
+
 void AProjectileLaser::UpdateBeam()
 {
     AActor* OwnerActor = GetOwner();
     if (!OwnerActor) return;
+    if (!MuzzleAttachComponent) return;
 
-    const FVector StartLocation = OwnerActor->GetActorLocation();
-    const FVector ForwardDir = OwnerActor->GetActorForwardVector();
+    FVector StartLocation;
+    FVector ForwardDir;
+
+    if (MuzzleSocketName != NAME_None && MuzzleAttachComponent->DoesSocketExist(MuzzleSocketName))
+    {
+        StartLocation = MuzzleAttachComponent->GetSocketLocation(MuzzleSocketName);
+        ForwardDir = MuzzleAttachComponent->GetSocketRotation(MuzzleSocketName).Vector();
+    }
+    else
+    {
+        StartLocation = MuzzleAttachComponent->GetComponentLocation();
+        ForwardDir = MuzzleAttachComponent->GetForwardVector();
+    }
+
     const FVector TraceEnd = StartLocation + ForwardDir * MaxRange;
 
     FHitResult HitResult;

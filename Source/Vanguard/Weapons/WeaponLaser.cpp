@@ -12,3 +12,16 @@ void AWeaponLaser::BeginPlay()
 
     Fire();
 }
+
+void AWeaponLaser::Fire()
+{
+    if (!ProjectileToSpawn || ActiveLaser) return;
+
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = GetOwner();
+
+    ActiveLaser = GetWorld()->SpawnActor<AProjectileLaser>(ProjectileToSpawn, GetActorLocation(), GetActorRotation(), SpawnParams);
+
+    if (ActiveLaser)
+        ActiveLaser->SetMuzzleTransform(MeshComponent, TEXT("MuzzleSocket"));
+}
