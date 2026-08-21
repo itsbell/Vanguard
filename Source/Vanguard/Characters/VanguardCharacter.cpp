@@ -120,6 +120,10 @@ void AVanguardCharacter::TakeDamageAmount(float Damage)
 	if (Health <= 0.0f)
 	{
 		bIsDead = true;
+		
+		if (CurrentWeapon)
+			CurrentWeapon->SetActorTickEnabled(false);
+
 		OnCharacterDied.Broadcast(this);
 	}
 }

@@ -7,6 +7,7 @@
 #include "WeaponBox.h"
 #include "Characters/VanguardCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 AStageManager::AStageManager()
@@ -119,6 +120,23 @@ void AStageManager::HandleEnemyDied(AEnemy* DeadEnemy)
 
 void AStageManager::HandleCharacterDied(AVanguardCharacter* DeadCharacter)
 {
+	SetActorTickEnabled(false);
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		PlayerController->SetInputMode(FInputModeUIOnly());
+		PlayerController->bShowMouseCursor = true;
+	}
 
+	if (GameOverWidgetClass)
+	{
+		UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass);
+		if (GameOverWidget)
+		{
+			GameOverWidget->AddToViewport();
+		}
+	}
+	else
+        UE_LOG(LogTemp, Warning, TEXT("GameOverWidgetClass is not set"));
 }
 

@@ -6,11 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "StageManager.generated.h"
 
+
 class AEnemy;
 class AEnemySpawner;
 class AVanguardCharacter;
 class ABaseWeapon;
 class AWeaponBox;
+class UUserWidget;
 
 USTRUCT(BlueprintType)
 struct FSpawnEntry
@@ -78,6 +80,9 @@ private:
 	int32 StageIndex = 0;
 	int32 WaveIndex = 0;
 	int32 AliveEnemyCount = 0;
+
+	UPROPERTY(EditAnywhere, Category = "위젯")
+	TSubclassOf<UUserWidget> GameOverWidgetClass;
 
 	UPROPERTY(EditAnywhere)
 	TArray<FStage> Stages;
