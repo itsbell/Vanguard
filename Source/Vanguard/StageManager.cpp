@@ -22,6 +22,8 @@ void AStageManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SetActorTickEnabled(false);
+	
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (!PlayerPawn)
 	{
@@ -43,7 +45,32 @@ void AStageManager::BeginPlay()
 		return;
 	}
 
-	StartWave();
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		PlayerController->SetInputMode(FInputModeUIOnly());
+		PlayerController->bShowMouseCursor = true;
+	}
+
+	if (IntroWidgetClass)
+	{
+		UUserWidget* IntroWidget = CreateWidget<UUserWidget>(GetWorld(), IntroWidgetClass);
+		if (IntroWidget)
+		{
+			IntroWidget->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to create IntroWidget"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("IntroWidgetClass is not set"));
+    }
+
+
 }
 
 // Called every frame
@@ -98,6 +125,24 @@ void AStageManager::Tick(float DeltaTime)
 			StartWave();
 		}
 	}
+}
+
+void AStageManager::StartGame()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		PlayerController->bShowMouseCursor = false;
+	}
+	
+	if (Character)
+	{
+		Character->OnGameStarted();
+	}
+
+	SetActorTickEnabled(true);
+	StartWave();
 }
 
 void AStageManager::StartWave()

@@ -76,10 +76,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void StartGame();
+
 private:
 	int32 StageIndex = 0;
 	int32 WaveIndex = 0;
 	int32 AliveEnemyCount = 0;
+
+	UPROPERTY(EditAnywhere, Category = "위젯")
+	TSubclassOf<UUserWidget> IntroWidgetClass;
 
 	UPROPERTY(EditAnywhere, Category = "위젯")
 	TSubclassOf<UUserWidget> GameOverWidgetClass;

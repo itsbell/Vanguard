@@ -50,6 +50,19 @@ AVanguardCharacter::AVanguardCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AVanguardCharacter::OnGameStarted()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->SetActorTickEnabled(true);
+	}
+
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(ESlateVisibility::Visible);
+    }
+}
+
 void AVanguardCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -61,6 +74,7 @@ void AVanguardCharacter::BeginPlay()
 		if (HealthBarWidget)
 		{
 			HealthBarWidget->AddToViewport();
+            HealthBarWidget->SetVisibility(ESlateVisibility::Hidden);
 			HealthBarWidget->SetHealthPercent(1.f);
 		}
 	}
