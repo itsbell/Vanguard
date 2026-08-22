@@ -89,6 +89,9 @@ private:
 	TSubclassOf<UUserWidget> IntroWidgetClass;
 
 	UPROPERTY(EditAnywhere, Category = "위젯")
+	TSubclassOf<UUserWidget> AllClearWidgetClass;
+
+	UPROPERTY(EditAnywhere, Category = "위젯")
 	TSubclassOf<UUserWidget> GameOverWidgetClass;
 
 	UPROPERTY(EditAnywhere, Category = "위젯")
@@ -123,5 +126,5 @@ private:
 	void BeginStage();
 	void StartSpawning();
 	void FinishClear();
-
+	void ShowEndScreen(TSubclassOf<UUserWidget> WidgetClass);
 };

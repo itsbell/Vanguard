@@ -169,24 +169,9 @@ void AStageManager::HandleEnemyDied(AEnemy* DeadEnemy)
 
 void AStageManager::HandleCharacterDied(AVanguardCharacter* DeadCharacter)
 {
+	GetWorldTimerManager().ClearTimer(TransitionTimerHandle);
 	SetActorTickEnabled(false);
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if (PlayerController)
-	{
-		PlayerController->SetInputMode(FInputModeUIOnly());
-		PlayerController->bShowMouseCursor = true;
-	}
-
-	if (GameOverWidgetClass)
-	{
-		UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass);
-		if (GameOverWidget)
-		{
-			GameOverWidget->AddToViewport();
-		}
-	}
-	else
-        UE_LOG(LogTemp, Warning, TEXT("GameOverWidgetClass is not set"));
+	ShowEndScreen(GameOverWidgetClass);
 }
 
 void AStageManager::BeginStage()
@@ -224,6 +209,37 @@ void AStageManager::FinishClear()
 	BannerWidget->SetVisibility(ESlateVisibility::Collapsed);
 	StageIndex++;
 	WaveIndex = 0;
-	if (StageIndex >= Stages.Num()) return;
+	if (StageIndex >= Stages.Num())
+	{
+		ShowEndScreen(AllClearWidgetClass);
+		return;
+	}
 	GetWorldTimerManager().SetTimer(TransitionTimerHandle, this, &AStageManager::BeginStage, TransitionGap, false);
+}
+
+void AStageManager::ShowEndScreen(TSubclassOf<UUserWidget> WidgetClass)
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		PlayerController->SetInputMode(FInputModeUIOnly());
+		PlayerController->bShowMouseCursor = true;
+	}
+
+	if (WidgetClass)
+	{
+		UUserWidget* EndScreenWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+		if (EndScreenWidget)
+		{
+			EndScreenWidget->AddToViewport();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to create EndScreenWidget"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EndScreen WidgetClass is not set"));
+    }
 }
