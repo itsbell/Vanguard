@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 #include "Widgets/StageBannerWidget.h"
+#include "Widgets/EndScreenWidget.h"
 
 // Sets default values
 AStageManager::AStageManager()
@@ -165,6 +166,7 @@ void AStageManager::StartWave()
 void AStageManager::HandleEnemyDied(AEnemy* DeadEnemy)
 {
 	AliveEnemyCount--;
+	KillCount++;
 }
 
 void AStageManager::HandleCharacterDied(AVanguardCharacter* DeadCharacter)
@@ -232,6 +234,10 @@ void AStageManager::ShowEndScreen(TSubclassOf<UUserWidget> WidgetClass)
 		if (EndScreenWidget)
 		{
 			EndScreenWidget->AddToViewport();
+			if (UEndScreenWidget* EndScreen = Cast<UEndScreenWidget>(EndScreenWidget))
+			{
+				EndScreen->SetStats(StageIndex + 1, KillCount);
+			}
 		}
 		else
 		{
