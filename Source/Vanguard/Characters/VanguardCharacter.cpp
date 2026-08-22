@@ -10,7 +10,7 @@
 #include "InputActionValue.h"
 #include "Vanguard.h"
 #include "Weapons/BaseWeapon.h"
-#include "HealthBarWidget.h"
+#include "Widgets/HealthBarWidget.h"
 
 AVanguardCharacter::AVanguardCharacter()
 {
@@ -60,6 +60,18 @@ void AVanguardCharacter::OnGameStarted()
 	if (HealthBarWidget)
 	{
 		HealthBarWidget->SetVisibility(ESlateVisibility::Visible);
+    }
+}
+
+void AVanguardCharacter::OnGameEnded()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->SetActorTickEnabled(false);
+	}
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(ESlateVisibility::Hidden);
     }
 }
 

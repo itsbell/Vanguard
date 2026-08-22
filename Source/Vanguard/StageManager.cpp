@@ -8,6 +8,8 @@
 #include "Characters/VanguardCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
+#include "Widgets/StageBannerWidget.h"
+#include "Widgets/EndScreenWidget.h"
 
 // Sets default values
 AStageManager::AStageManager()
@@ -120,9 +122,13 @@ void AStageManager::Tick(float DeltaTime)
 		if (AliveEnemyCount == 0) // Stage Clear
 		{
 			AWeaponBox::DestroyAll(GetWorld()); // StartWave가 다음 스테이지 박스를 스폰하기 전에 정리한다
-			StageIndex++;
-			WaveIndex = 0;
-			StartWave();
+			SetActorTickEnabled(false);
+			if (BannerWidget)
+			{
+				BannerWidget->SetVisibility(ESlateVisibility::Visible);
+				BannerWidget->SetBanner(FText::FromString(TEXT("STAGE CLEAR!")), FLinearColor(0.184f, 0.706f, 0.294f), FLinearColor(0.184f, 0.706f, 0.294f));
+			}
+			GetWorldTimerManager().SetTimer(TransitionTimerHandle, this, &AStageManager::FinishClear, BannerDuration, false);
 		}
 	}
 }
@@ -141,8 +147,7 @@ void AStageManager::StartGame()
 		Character->OnGameStarted();
 	}
 
-	SetActorTickEnabled(true);
-	StartWave();
+	BeginStage();
 }
 
 void AStageManager::StartWave()
@@ -161,11 +166,63 @@ void AStageManager::StartWave()
 void AStageManager::HandleEnemyDied(AEnemy* DeadEnemy)
 {
 	AliveEnemyCount--;
+	KillCount++;
 }
 
 void AStageManager::HandleCharacterDied(AVanguardCharacter* DeadCharacter)
 {
+	GetWorldTimerManager().ClearTimer(TransitionTimerHandle);
 	SetActorTickEnabled(false);
+	ShowEndScreen(GameOverWidgetClass);
+}
+
+void AStageManager::BeginStage()
+{
+	if (!StageBannerWidgetClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("StageBannerWidgetClass is not set"));
+		return;
+	}
+	if (!BannerWidget)
+	{
+		BannerWidget = CreateWidget<UStageBannerWidget>(GetWorld(), StageBannerWidgetClass);
+		if (!BannerWidget)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to create BannerWidget"));
+			return;
+		}
+		BannerWidget->AddToViewport();
+	}
+
+	BannerWidget->SetVisibility(ESlateVisibility::Visible);
+	BannerWidget->SetBanner(FText::Format(FText::FromString(TEXT("STAGE {0}")), StageIndex + 1), FLinearColor::White, FLinearColor(1.0f, 0.294f, 0.18f));
+	GetWorldTimerManager().SetTimer(TransitionTimerHandle, this, &AStageManager::StartSpawning, BannerDuration, false);
+}
+
+void AStageManager::StartSpawning()
+{
+	BannerWidget->SetVisibility(ESlateVisibility::Collapsed);
+	SetActorTickEnabled(true);
+	StartWave();
+}
+
+void AStageManager::FinishClear()
+{
+	BannerWidget->SetVisibility(ESlateVisibility::Collapsed);
+	StageIndex++;
+	WaveIndex = 0;
+	if (StageIndex >= Stages.Num())
+	{
+		ShowEndScreen(AllClearWidgetClass);
+		return;
+	}
+	GetWorldTimerManager().SetTimer(TransitionTimerHandle, this, &AStageManager::BeginStage, TransitionGap, false);
+}
+
+void AStageManager::ShowEndScreen(TSubclassOf<UUserWidget> WidgetClass)
+{
+	if (Character) Character->OnGameEnded();
+
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (PlayerController)
 	{
@@ -173,15 +230,24 @@ void AStageManager::HandleCharacterDied(AVanguardCharacter* DeadCharacter)
 		PlayerController->bShowMouseCursor = true;
 	}
 
-	if (GameOverWidgetClass)
+	if (WidgetClass)
 	{
-		UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass);
-		if (GameOverWidget)
+		UUserWidget* EndScreenWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+		if (EndScreenWidget)
 		{
-			GameOverWidget->AddToViewport();
+			EndScreenWidget->AddToViewport();
+			if (UEndScreenWidget* EndScreen = Cast<UEndScreenWidget>(EndScreenWidget))
+			{
+				EndScreen->SetStats(StageIndex + 1, KillCount);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to create EndScreenWidget"));
 		}
 	}
 	else
-        UE_LOG(LogTemp, Warning, TEXT("GameOverWidgetClass is not set"));
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EndScreen WidgetClass is not set"));
+    }
 }
-

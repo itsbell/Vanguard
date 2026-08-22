@@ -8,7 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
-#include "HealthBarWidget.h"
+#include "Widgets/HealthBarWidget.h"
 #include "TimerManager.h"
 
 // Sets default values
