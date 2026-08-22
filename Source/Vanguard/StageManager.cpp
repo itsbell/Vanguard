@@ -8,6 +8,7 @@
 #include "Characters/VanguardCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
+#include "Widgets/StageBannerWidget.h"
 
 // Sets default values
 AStageManager::AStageManager()
@@ -120,9 +121,13 @@ void AStageManager::Tick(float DeltaTime)
 		if (AliveEnemyCount == 0) // Stage Clear
 		{
 			AWeaponBox::DestroyAll(GetWorld()); // StartWave가 다음 스테이지 박스를 스폰하기 전에 정리한다
-			StageIndex++;
-			WaveIndex = 0;
-			StartWave();
+			SetActorTickEnabled(false);
+			if (BannerWidget)
+			{
+				BannerWidget->SetVisibility(ESlateVisibility::Visible);
+				BannerWidget->SetBanner(FText::FromString(TEXT("STAGE CLEAR!")), FLinearColor(0.184f, 0.706f, 0.294f), FLinearColor(0.184f, 0.706f, 0.294f));
+			}
+			GetWorldTimerManager().SetTimer(TransitionTimerHandle, this, &AStageManager::FinishClear, BannerDuration, false);
 		}
 	}
 }
@@ -141,8 +146,7 @@ void AStageManager::StartGame()
 		Character->OnGameStarted();
 	}
 
-	SetActorTickEnabled(true);
-	StartWave();
+	BeginStage();
 }
 
 void AStageManager::StartWave()
@@ -185,3 +189,41 @@ void AStageManager::HandleCharacterDied(AVanguardCharacter* DeadCharacter)
         UE_LOG(LogTemp, Warning, TEXT("GameOverWidgetClass is not set"));
 }
 
+void AStageManager::BeginStage()
+{
+	if (!StageBannerWidgetClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("StageBannerWidgetClass is not set"));
+		return;
+	}
+	if (!BannerWidget)
+	{
+		BannerWidget = CreateWidget<UStageBannerWidget>(GetWorld(), StageBannerWidgetClass);
+		if (!BannerWidget)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to create BannerWidget"));
+			return;
+		}
+		BannerWidget->AddToViewport();
+	}
+
+	BannerWidget->SetVisibility(ESlateVisibility::Visible);
+	BannerWidget->SetBanner(FText::Format(FText::FromString(TEXT("STAGE {0}")), StageIndex + 1), FLinearColor::White, FLinearColor(1.0f, 0.294f, 0.18f));
+	GetWorldTimerManager().SetTimer(TransitionTimerHandle, this, &AStageManager::StartSpawning, BannerDuration, false);
+}
+
+void AStageManager::StartSpawning()
+{
+	BannerWidget->SetVisibility(ESlateVisibility::Collapsed);
+	SetActorTickEnabled(true);
+	StartWave();
+}
+
+void AStageManager::FinishClear()
+{
+	BannerWidget->SetVisibility(ESlateVisibility::Collapsed);
+	StageIndex++;
+	WaveIndex = 0;
+	if (StageIndex >= Stages.Num()) return;
+	GetWorldTimerManager().SetTimer(TransitionTimerHandle, this, &AStageManager::BeginStage, TransitionGap, false);
+}

@@ -7,7 +7,7 @@
 #include "Characters/VanguardCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
-#include "HealthBarWidget.h"
+#include "Widgets/HealthBarWidget.h"
 
 TArray<TWeakObjectPtr<AWeaponBox>> AWeaponBox::ActiveBoxes;
 

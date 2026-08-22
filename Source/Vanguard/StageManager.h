@@ -13,6 +13,7 @@ class AVanguardCharacter;
 class ABaseWeapon;
 class AWeaponBox;
 class UUserWidget;
+class UStageBannerWidget;
 
 USTRUCT(BlueprintType)
 struct FSpawnEntry
@@ -90,6 +91,16 @@ private:
 	UPROPERTY(EditAnywhere, Category = "위젯")
 	TSubclassOf<UUserWidget> GameOverWidgetClass;
 
+	UPROPERTY(EditAnywhere, Category = "위젯")
+    TSubclassOf<UStageBannerWidget> StageBannerWidgetClass;
+
+	UPROPERTY()
+	UStageBannerWidget* BannerWidget;
+
+	FTimerHandle TransitionTimerHandle;
+	float BannerDuration = 1.5f;
+	float TransitionGap = 0.5f;
+
 	UPROPERTY(EditAnywhere)
 	TArray<FStage> Stages;
 
@@ -108,4 +119,9 @@ private:
 	
 	UFUNCTION()
 	void HandleCharacterDied(AVanguardCharacter* DeadCharacter);
+
+	void BeginStage();
+	void StartSpawning();
+	void FinishClear();
+
 };

@@ -10,7 +10,7 @@
 #include "InputActionValue.h"
 #include "Vanguard.h"
 #include "Weapons/BaseWeapon.h"
-#include "HealthBarWidget.h"
+#include "Widgets/HealthBarWidget.h"
 
 AVanguardCharacter::AVanguardCharacter()
 {
