@@ -221,6 +221,8 @@ void AStageManager::FinishClear()
 
 void AStageManager::ShowEndScreen(TSubclassOf<UUserWidget> WidgetClass)
 {
+	if (Character) Character->OnGameEnded();
+
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (PlayerController)
 	{

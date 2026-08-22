@@ -63,6 +63,18 @@ void AVanguardCharacter::OnGameStarted()
     }
 }
 
+void AVanguardCharacter::OnGameEnded()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->SetActorTickEnabled(false);
+	}
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
+}
+
 void AVanguardCharacter::BeginPlay()
 {
 	Super::BeginPlay();

@@ -75,6 +75,7 @@ public:
 	AVanguardCharacter();	
 
 	void OnGameStarted();
+    void OnGameEnded();
 
 	// 기존 무기를 버리고 새로 장착. 무기 변경의 유일한 진입점
 	void EquipWeapon(TSubclassOf<ABaseWeapon> NewWeaponClass);
