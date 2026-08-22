@@ -48,11 +48,11 @@ void ABaseWeapon::Fire()
 	FVector SpawnLocation = GetActorLocation();
 	FRotator SpawnRotation = GetActorRotation();
 
-	//if (MeshComponent->DoesSocketExist(TEXT("MuzzleSocket")))
-	//{
-	//	SpawnLocation = MeshComponent->GetSocketLocation(TEXT("MuzzleSocket"));
-	//	SpawnRotation = MeshComponent->GetSocketRotation(TEXT("MuzzleSocket"));
-	//}
+	if (MeshComponent->DoesSocketExist(TEXT("MuzzleSocket")))
+	{
+		SpawnLocation = MeshComponent->GetSocketLocation(TEXT("MuzzleSocket"));
+		SpawnRotation = MeshComponent->GetSocketRotation(TEXT("MuzzleSocket"));
+	}
 
 	GetWorld()->SpawnActor<ABaseProjectile>(ProjectileToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
 }
