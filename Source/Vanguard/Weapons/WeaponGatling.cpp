@@ -30,8 +30,14 @@ void AWeaponGatling::FireFromBarrel(const FVector& LocalOffset)
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = GetOwner();
 
-    const FVector SpawnLocation = GetActorTransform().TransformPosition(LocalOffset);
-    const FRotator SpawnRotation = GetActorRotation();
+    FVector SpawnLocation = GetActorTransform().TransformPosition(LocalOffset);
+    FRotator SpawnRotation = GetActorRotation();
+
+    if (MeshComponent->DoesSocketExist(TEXT("MuzzleSocket")))
+    {
+        SpawnLocation = MeshComponent->GetSocketLocation(TEXT("MuzzleSocket"));
+        SpawnRotation = MeshComponent->GetSocketRotation(TEXT("MuzzleSocket"));
+    }
 
     GetWorld()->SpawnActor<ABaseProjectile>(ProjectileToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
 }
