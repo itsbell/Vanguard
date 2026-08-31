@@ -27,6 +27,9 @@ protected:
 	float Damage = 10.0f;
 
 	UPROPERTY(VisibleAnywhere)
+	USceneComponent* ProjectileRoot;
+
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 
 };
