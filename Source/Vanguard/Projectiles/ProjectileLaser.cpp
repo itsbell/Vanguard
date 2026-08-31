@@ -49,18 +49,14 @@ void AProjectileLaser::UpdateBeam()
 
     const float BeamLength = bHit ? FVector::Distance(StartLocation, HitResult.ImpactPoint) : MaxRange;
 
-    // 큐브(중심 피벗) 기준 - 시작점에서 절반만큼 앞으로 위치를 밀어줌
-    const FVector CenterLocation = StartLocation + ForwardDir * (BeamLength * 0.5f);
-
-    SetActorLocation(CenterLocation);
+    SetActorLocation(StartLocation);
     SetActorRotation(ForwardDir.Rotation());
 
-    // 기본 큐브는 한 변이 100 unit이라고 가정
-    const float BaseCubeLength = 100.0f;
+    const float BaseCylinderLength = 100.0f;
     MeshComponent->SetRelativeScale3D(FVector(
-        BeamLength / BaseCubeLength,
-        BeamThickness / BaseCubeLength,
-        BeamThickness / BaseCubeLength));
+        BeamThickness / BaseCylinderLength,
+        BeamThickness / BaseCylinderLength,
+        BeamLength / BaseCylinderLength));
 
     // 맞은 대상 처리 (대상이 바뀌었을 때만 갱신)
     AActor* NewHitActor = bHit ? HitResult.GetActor() : nullptr;
