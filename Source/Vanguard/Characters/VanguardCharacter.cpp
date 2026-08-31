@@ -52,6 +52,8 @@ AVanguardCharacter::AVanguardCharacter()
 
 void AVanguardCharacter::OnGameStarted()
 {
+	bCombatEnabled = true;
+
 	if (CurrentWeapon)
 	{
 		CurrentWeapon->SetActorTickEnabled(true);
@@ -65,6 +67,8 @@ void AVanguardCharacter::OnGameStarted()
 
 void AVanguardCharacter::OnGameEnded()
 {
+	bCombatEnabled = false;
+
 	if (CurrentWeapon)
 	{
 		CurrentWeapon->SetActorTickEnabled(false);
@@ -119,6 +123,9 @@ void AVanguardCharacter::EquipWeapon(TSubclassOf<ABaseWeapon> NewWeaponClass)
 
 	CurrentWeapon = SpawnedWeapon;
 	SpawnedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
+
+	// 무기는 틱이 꺼진 채 스폰된다. 게임 중 획득한 무기가 발사되지 않는 것을 막는다
+	SpawnedWeapon->SetActorTickEnabled(bCombatEnabled);
 
 	UpdateWalkSpeed();
 }

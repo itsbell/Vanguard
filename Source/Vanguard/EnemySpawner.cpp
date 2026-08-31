@@ -41,7 +41,7 @@ AWeaponBox* AEnemySpawner::SpawnWeaponBox(TSubclassOf<AWeaponBox> WeaponBoxClass
 		UE_LOG(LogTemp, Warning, TEXT("SpawnWeaponBox called with null WeaponBoxClass."));
 		return nullptr;
 	}
-	FVector SpawnLocation = GetActorLocation() + GetActorRightVector() * WeaponBoxOffset;
+	FVector SpawnLocation = GetActorLocation() + GetActorRightVector() * WeaponBoxOffset + FVector(0.f, 0.f, WeaponBoxHeightOffset);
 
 	AWeaponBox* SpawnedBox = GetWorld()->SpawnActor<AWeaponBox>(WeaponBoxClass, SpawnLocation, GetActorRotation());
 	if (SpawnedBox && WeaponClass) // 웨이브에 지정된 게 있으면 박스 BP 기본값을 덮어쓴다

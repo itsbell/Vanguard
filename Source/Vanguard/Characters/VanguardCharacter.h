@@ -59,6 +59,9 @@ protected:
 	const float BaseWalkSpeed = 500.f;
 
 	bool bIsDead = false;
+
+	// 전투(발사) 허용 상태. 게임 중 새로 장착한 무기의 틱을 이 값으로 맞춘다
+	bool bCombatEnabled = false;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Status")
 	float MaxHealth = 100.0f;

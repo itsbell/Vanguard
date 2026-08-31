@@ -33,4 +33,8 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float WeaponBoxOffset = 100.0f;
+
+	// 박스는 중력이 없어 스폰된 높이에 그대로 머문다. 스포너 높이를 기준으로 Z를 보정한다
+	UPROPERTY(EditAnywhere)
+	float WeaponBoxHeightOffset = 0.0f;
 };
