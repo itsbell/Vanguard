@@ -3,8 +3,11 @@
 
 ABaseProjectile::ABaseProjectile()
 {
-    MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
-	RootComponent = MeshComponent;
+	ProjectileRoot = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileRoot"));
+	RootComponent = ProjectileRoot;
+
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
+	MeshComponent->SetupAttachment(ProjectileRoot);
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
