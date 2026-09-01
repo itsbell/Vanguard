@@ -23,6 +23,9 @@ void ABaseProjectile::BeginPlay()
 void ABaseProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor || OtherActor == this || OtherActor == GetOwner()) return;
+	
+	if (OtherActor->IsA<ABaseProjectile>()) return; // 다른 발사체와는 충돌하지 않음
+
 	// Apply damage to the other actor if it implements the IDamageable interface
 	IDamageable* DamageableActor = Cast<IDamageable>(OtherActor);
 	if (DamageableActor)
