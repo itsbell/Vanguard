@@ -88,6 +88,10 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnVanguardCharacterDied OnCharacterDied;
 
+
+	UPROPERTY(BlueprintReadOnly, Category = "Animation")
+	UAnimSequenceBase* CurrentWeaponAnimation = nullptr;
+
 protected:
 	virtual void BeginPlay() override;
 

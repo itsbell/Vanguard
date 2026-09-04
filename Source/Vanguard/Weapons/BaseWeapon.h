@@ -18,6 +18,9 @@ public:
 
 	float GetWeight() const { return Weight; }
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimSequenceBase* UpperBodyAnimation;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Fire();
