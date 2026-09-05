@@ -20,6 +20,12 @@ void AProjectileLaser::SetMuzzleTransform(USceneComponent* InAttachComponent, FN
 
 void AProjectileLaser::UpdateBeam()
 {
+    if (!MuzzleAttachComponent || !IsValid(MuzzleAttachComponent->GetOwner()))
+    {
+        StopLaser();
+        return;
+    }
+    
     AActor* OwnerActor = GetOwner();
     if (!OwnerActor) return;
     if (!MuzzleAttachComponent) return;

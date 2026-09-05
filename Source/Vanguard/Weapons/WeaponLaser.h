@@ -16,6 +16,8 @@ class VANGUARD_API AWeaponLaser : public ABaseWeapon
 protected:
     virtual void BeginPlay() override;
 
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
     virtual void Fire() override;
 
     UPROPERTY()

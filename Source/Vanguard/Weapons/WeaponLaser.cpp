@@ -13,6 +13,17 @@ void AWeaponLaser::BeginPlay()
     Fire();
 }
 
+void AWeaponLaser::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    if (ActiveLaser)
+    {
+        ActiveLaser->StopLaser();
+        ActiveLaser = nullptr;
+    }
+
+    Super::EndPlay(EndPlayReason);
+}
+
 void AWeaponLaser::Fire()
 {
     if (!ProjectileToSpawn || ActiveLaser) return;
